@@ -1,0 +1,195 @@
+/*
+ * This file is part of web-charts, an interactive web charts program.
+ * 
+ * Copyright (C) 2015 John Kieran Phillips
+ *
+ * web-charts is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * web-charts is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
+ */
+@CHARSET "UTF-8";
+
+* {
+   margin: 0;
+   padding: 0;
+}
+
+html, body {
+   height: 100%;
+   min-height: 600px;
+   min-width: 750px;
+}
+
+#Site {
+   height:100%;
+}
+
+#Tabs {
+   background-color: #fafafa;
+}
+
+#TabContent {
+   background-color: #fafafa;
+}
+
+.DefaultFont {
+   font: 65% "Trebuchet MS", sans-serif;
+}
+
+.BigFont {
+   font: 120% "Trebuchet MS", sans-serif;
+}
+
+/* Page main chart content container. */
+#Content
+{
+   height: calc(100% - 250px - 30px - 30px);
+   width: 100%;
+   background-color: white;
+   font: 65% "Trebuchet MS", sans-serif; 
+}
+
+/* A horizontal menu bar at the head of the UI. */
+#MenuBar
+{
+   height: 26px;
+   width: 100%;
+   margin: 0px;
+   font: 65% "Trebuchet MS", sans-serif;
+   padding-top: 4px;
+   border: 0px;
+   background: #e5ebee;
+   background: -moz-linear-gradient(top,  #e5ebee 24%, #fafafa 100%);
+   background: -webkit-gradient(linear, left top, left bottom, color-stop(24%,#e5ebee), color-stop(100%,#fafafa));
+   background: -webkit-linear-gradient(top,  #e5ebee 24%,#fafafa 100%);
+   background: -o-linear-gradient(top,  #e5ebee 24%,#fafafa 100%);
+   background: -ms-linear-gradient(top,  #e5ebee 24%,#fafafa 100%);
+   background: linear-gradient(to bottom,  #e5ebee 24%,#fafafa 100%);
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5ebee', endColorstr='#fafafa',GradientType=0 );
+}
+
+.MenuBarRightDivider {
+   float: right;
+   margin-right: 50px;
+   height: 1px;
+}
+
+.MenuBarControl {
+   float: right;
+   margin-top: 4px;
+   margin-right: 10px;
+}
+
+/* A horizontal control bar at the base of the UI. */
+#ControlBar
+{
+   height: 250px;
+   width: 100%;
+   margin: 0px;
+   padding: 0px;
+   border: 0px;
+   background-color: none;
+}
+
+/* A Console element in the control bar. */
+.ControlBarConsoleLeft, .ControlBarConsoleMiddle, .ControlBarConsoleRight
+{
+   height: 100%;
+   border: 0px;
+   padding: 0px;
+   display: inline-block;
+   float: left;
+}
+
+/* A horizontal footer button bar at the base of the UI. */
+#FooterButtons
+{
+   height: 30px;
+   width: 100%;
+   margin: 0px;
+   padding: 0px;
+   border: 0px;
+   background-color: rgb(230, 230, 230);
+}
+
+.FooterButtonsOuter {
+   height: 100%;
+   display: inline-block;
+   float: left;
+   border: none;
+   margin: 0px;
+   padding: 0;
+   display: block;
+}
+
+.FooterButtonsLeft, .FooterButtonsMiddle, .FooterButtonsRight
+{
+   border: 1px solid silver;
+   border-radius: 2px;
+   height: calc(100% - 0px);
+   width: calc(100% - 0px);
+   display: block;
+}
+
+/* A container for a line-chart. */
+.line_chart_container {
+   width: 100%;
+}
+
+/* Icon backgrounds */
+.icon-cross {
+   background-position: center;
+   background-repeat: no-repeat;
+   height: 100%;
+   width: 100%;
+   background-image: url("js/images/icon-cross.png");
+}
+
+.icon-add {
+   background-position: center;
+   background-repeat: no-repeat;
+   height: 100%;
+   width: 100%;
+   background-image: url("js/images/icon-add.png");
+}
+
+.icon-search {
+   background-position: center;
+   background-repeat: no-repeat;
+   height: 100%;
+   width: 100%;
+   background-image: url("js/images/icon-search.png");
+}
+
+.icon-tick {
+   background-position: center;
+   background-repeat: no-repeat;
+   height: 100%;
+   width: 100%;
+   background-image: url("js/images/icon-tick.png");
+}
+
+.ui-tooltip-content {
+   font: 75% "Trebuchet MS", sans-serif;
+}
+
+.ButtonGlowSubtle {
+   -moz-box-shadow: 0px 0px 5px Grey;
+   -webkit-box-shadow: 0px 0px 5px Grey;
+   box-shadow: 0px 0px 5px Grey;
+}
+
+.ButtonGlowDefault {
+   -moz-box-shadow: 0px 0px 5px Blue;
+   -webkit-box-shadow: 0px 0px 5px Blue;
+   box-shadow: 0px 0px 5px Blue;
+}
