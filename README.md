@@ -18,6 +18,6 @@ web-charts uses external javascript libraries. These libraries are mostly in the
 web-charts uses:
 
  * the [Dygraphs](http://dygraphs.com) javascript charting library, which is licensed under the MIT license. The Dygraphs license text has been copied under /WebContent/external/dygraphs/dygraph-combined.LICENSE.
- * the [jQuery](http://jquery.com) javascript library, which is licensed uner the MIT license. The jQuery license text has been copied under /WebContent/external/jQuery/jquery.LICENSE. 
- * the [jQuery UI](http://jqueryui.com) javascript library, which is licensed under the MIT license. The jQuery UI license text has been copied under /WebContent/external/jQueryUI/jquery-ui.LICENSE.
- * the [w2ui](http://w2ui.com) javascript charting library (version 1.4.2), which is licensed under the MIT license. The w2ui version 1.4.2 license text has been copied under /WebContent/external/w2ui/w2ui-1.4.2.LICENSE
+ * the [jQuery](http://jquery.com) javascript library (version 1.11.2), which is licensed uner the MIT license. The jQuery license text has been copied under /WebContent/external/jquery-1.11.2/jquery-1.11.2.LICENSE. 
+ * the [jQuery UI](http://jqueryui.com) javascript library (version 1.11.3), which is licensed under the MIT license. The jQuery UI license text has been copied under /WebContent/external/jquery-ui-1.11.3/jquery-ui.LICENSE. Some images in the jQuery UI /images/ subfolder are modified.
+ * the [w2ui](http://w2ui.com) javascript charting library (version 1.4.2), which is licensed under the MIT license. The w2ui version 1.4.2 license text has been copied under /WebContent/external/w2ui-1.4.2/w2ui-1.4.2.LICENSE
