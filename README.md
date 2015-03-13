@@ -1,6 +1,10 @@
 # web-charts
 
-Interactive Web Charts.
+Interactive web charts. web-charts is web application that provides interactive on-demand 
+scientific graphs in a web browser. The server may be generating the underlying data continuously,
+or reading the data from eg. a database/CSV file source.
+
+![web-charts in a Safari browser](docs/webchartsPic.png)
 
 # Work in Progress
 
@@ -9,7 +13,7 @@ web-charts is incomplete and is a work in progress.
 # License
 
 The web-charts software is released under the GNU General Public License, Version 3, 29 June 2007. 
-Documentation included with the web-charts software is licensed under the GNU Free Documentation License, Version 1.3, 3 November 2008.
+Documentation included with the web-charts software (eg. /doc/) is licensed under the GNU Free Documentation License, Version 1.3, 3 November 2008.
 
 # Dependencies
 
