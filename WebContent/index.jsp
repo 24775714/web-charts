@@ -268,7 +268,8 @@
       var chartName = w2ui['ActiveChartsGrid'].get(recid).name;
       w2ui['tabs'].add({
        id: recid,
-       caption: chartName
+       caption: chartName,
+       closable: true
        });
       window.charts[chartName] = new DygraphLinechart(
        chartName,
