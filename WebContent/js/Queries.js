@@ -41,11 +41,6 @@ function getChartNamesFromServer() {
     }
     chartRecId = availableCharts.total;
     addChartToAvailableChartsList(element);
-    var data = new google.visualization.DataTable();
-    data.addColumn('number', 'Time');
-    data.addColumn('number', 'Value');
-    window.chartData[element.id] = data;
-    createTab(chartRecId);
    });
   },
   error: function(x,e){
@@ -84,15 +79,22 @@ function getDataStreamNameFromServer() {
   */
 function getChartDataFromServer() {
  var request = [];
- for(var key in window.chartData)
-  if(window.chartData.hasOwnProperty(key)) {
-   var
-    dataTable = window.chartData[key],
-    size = dataTable.getNumberOfRows();
-   request.push(JSON.stringify(
-    { chartName: key, timeOfInterest: size == 0. ? 
-      -Number.MAX_VALUE : dataTable.getValue(size - 1, 0) }));
+ for(var i = 0; i< w2ui['SubscribedChartsGrid'].total; ++i) {
+  var
+   chartName = w2ui['SubscribedChartsGrid'].get(i).id;
+  if(!window.chartData.hasOwnProperty(chartName)) {
+   var data = new google.visualization.DataTable();
+   data.addColumn('number', 'Time');
+   data.addColumn('number', chartName);
+   window.chartData[chartName] = data;
   }
+  var
+   dataTable = window.chartData[chartName],
+   size = dataTable.getNumberOfRows();
+  request.push(JSON.stringify(
+   { chartName: chartName, timeOfInterest: size == 0. ? 
+     -Number.MAX_VALUE : dataTable.getValue(size - 1, 0) }));
+ }
  $.ajax({
   type: 'POST',
   url: servlet,
