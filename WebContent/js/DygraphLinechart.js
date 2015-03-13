@@ -26,7 +26,7 @@
   *        The (uniquely-identifying) name of the chart.
   * @param containerID <br>
   *        The ID of the <div> into which this chart should be drawn.
-  * @param dataTable <br>
+  * @param multichart <br>
   *        A datatable containing chart data.
   * @param title <br>
   *        The title for this chart.
@@ -35,10 +35,10 @@
   * @param yLabel <br>
   *        The y-axis label for this chart.
   */
-function DygraphLinechart(graphName, containerID, dataTable, title, xLabel, yLabel) {
+function DygraphLinechart(graphName, containerID, multichart, title, xLabel, yLabel) {
  this.graphName = graphName;
  this.containerID = containerID;
- this.dataTable = dataTable;
+ this.multichart = multichart;
  this.title = title;
  this.xLabel = xLabel;
  this.yLabel = yLabel;
@@ -62,10 +62,29 @@ function DygraphLinechart(graphName, containerID, dataTable, title, xLabel, yLab
   xLabelHeight: 16,
   yLabelWidth: 16,
   fillGraph: false,
-  drawPoints: false
+  drawPoints: false,
+  strokeWidth: 1,
+  strokeBorderWidth: 0,
+  highlightSeriesOpts: {
+   strokeWidth: 1,
+   strokeBorderWidth: 0,
+   highlightCircleSize: 1
+  },
+  highlightSeriesBackgroundAlpha: 0.2,
+  fillAlpha: 0.1
  };
  this.loaded = false;
 }
+
+/*
+ * Implementation detail. A callback method when chart lines are clicked.
+ */
+DygraphLinechart.prototype.clickCallback = function() {
+ if(this.graph.isSeriesLocked())
+  this.graph.clearSelection();
+ else
+  this.graph.setSelection(this.graph.getSelection(), this.graph.getHighlightSeries(), true);
+};
 
 /**
   * Completely redraw this chart and all associated controls into its container.
@@ -138,9 +157,10 @@ DygraphLinechart.prototype.redraw = function() {
    $('#ShowRangeSelectorDygraphButton').removeClass('ButtonGlowSubtle');
   ref.graph = new Dygraph(
    document.getElementById(ref.containerID + 'DygraphContainer'),
-   ref.dataTable,
+   ref.multichart.table(),
    ref.options
    );
+  ref.graph.updateOptions({clickCallback: function(e) { ref.clickCallback(); }}, true);
  }).button());
  $('#' + this.containerID + 'DygraphButtons')
  .append($('<input/>', {
@@ -168,9 +188,11 @@ DygraphLinechart.prototype.redraw = function() {
  if(!this.loaded) {
   this.graph = new Dygraph(
     document.getElementById(this.containerID + 'DygraphContainer'),
-    this.dataTable,
+    this.multichart.table(),
     this.options
     );
+  var ref = this;
+  this.graph.updateOptions({clickCallback: function(e) { ref.clickCallback(); }}, true);
   this.loaded = true;
  }
  this.refresh();
@@ -197,7 +219,7 @@ DygraphLinechart.prototype.validateSmoothingValue = function() {
   */
 DygraphLinechart.prototype.refresh = function () {
  if(this.loaded)
-  this.graph.updateOptions({'file': this.dataTable});
+  this.graph.updateOptions({'file': this.multichart.table()});
 }
 
 /**
