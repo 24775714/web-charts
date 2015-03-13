@@ -151,7 +151,7 @@ html, body {
    background-repeat: no-repeat;
    height: 100%;
    width: 100%;
-   background-image: url("js/images/icon-cross.png");
+   background-image: url("../external/jquery-ui-1.11.3/images/icon-cross.png");
 }
 
 .icon-add {
@@ -159,7 +159,7 @@ html, body {
    background-repeat: no-repeat;
    height: 100%;
    width: 100%;
-   background-image: url("js/images/icon-add.png");
+   background-image: url("../external/jquery-ui-1.11.3/images/icon-add.png");
 }
 
 .icon-search {
@@ -167,7 +167,7 @@ html, body {
    background-repeat: no-repeat;
    height: 100%;
    width: 100%;
-   background-image: url("js/images/icon-search.png");
+   background-image: url("../external/jquery-ui-1.11.3/images/icon-search.png");
 }
 
 .icon-tick {
@@ -175,7 +175,7 @@ html, body {
    background-repeat: no-repeat;
    height: 100%;
    width: 100%;
-   background-image: url("js/images/icon-tick.png");
+   background-image: url("../external/jquery-ui-1.11.3/images/icon-tick.png");
 }
 
 .ui-tooltip-content {
