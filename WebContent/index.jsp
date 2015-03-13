@@ -27,6 +27,7 @@
   
   <script type="text/javascript" src="js/Dialogues.js"></script>
   <script type="text/javascript" src="js/Queries.js"></script>
+  <script type="text/javascript" src="js/Multichart.js"></script>
   
   <script type="text/javascript" src="external/jquery-1.11.2/jquery-1.11.2.min.js"></script>
   
@@ -250,7 +251,9 @@
      var activeTabRecID = -1;
      
      function redrawActiveChart() {
-      redrawChart(w2ui['AvailableChartsGrid'].get(activeTabRecID).id);
+      if(window.activeTabRecID == -1)
+       return;
+      redrawChart(w2ui['ActiveChartsGrid'].get(window.activeTabRecID).name);
      }
      
      function createTab(recid) {
@@ -262,7 +265,7 @@
         }
        });
       $('#TabContent').css('background-color', 'white');
-      var chartName = w2ui['AvailableChartsGrid'].get(recid).id;
+      var chartName = w2ui['ActiveChartsGrid'].get(recid).name;
       w2ui['tabs'].add({
        id: recid,
        caption: chartName
@@ -270,7 +273,7 @@
       window.charts[chartName] = new DygraphLinechart(
        chartName,
        'TabContent',
-       window.chartData[chartName],
+       window.multicharts[chartName],
        chartName,
        'Time',
        'Value'
@@ -283,9 +286,9 @@
       if(recid == window.activeTabRecID)
        return;
       if(window.activeTabRecID != -1)
-       window.charts[w2ui['AvailableChartsGrid'].get(window.activeTabRecID).id].unload();
+       window.charts[w2ui['ActiveChartsGrid'].get(window.activeTabRecID).name].unload();
       window.activeTabRecID = recid;
-      window.charts[w2ui['AvailableChartsGrid'].get(recid).id].redraw();
+      window.charts[w2ui['ActiveChartsGrid'].get(recid).name].redraw();
      }
     </script>
    </div>
@@ -419,26 +422,16 @@
           field : 'type',
           caption : 'Type',
           type : 'text'
-         }, {
-          field : 'size',
-          caption : 'Size',
-          type : 'int'
-         }, ],
+         } ],
          
          columns : [ {
           field : 'id',
           caption : 'ID',
-          size : '60%',
+          size : '80%',
           attr : 'align=left'
          }, {
           field : 'type',
           caption : 'Type',
-          size : '20%',
-          sortable : true,
-          attr : 'align=center'
-         }, {
-          field : 'size',
-          caption : 'Size',
           size : '20%',
           sortable : true,
           attr : 'align=center'
@@ -488,7 +481,7 @@
           );
          return false;
         }
-        window.multicharts[multichartName] = components;
+        window.multicharts[multichartName] = new Multichart(multichartName, components);
         addChartToActiveChartsList({name: multichartName, type: 'line'});
         return true;
        }
@@ -507,7 +500,9 @@
          */
        function addChartToActiveChartsList(chartInfo) {
         var grid = w2ui['ActiveChartsGrid'];
-        grid.add({recid: grid.total, name: chartInfo.name, type: chartInfo.type });
+        var recid = grid.total;
+        grid.add({recid: recid, name: chartInfo.name, type: chartInfo.type });
+        createTab(recid);
        }
        
        $(function() {
@@ -556,7 +551,7 @@
           var
            activeChartsGrid = w2ui['ActiveChartsGrid'],
            recordID = activeChartsGrid.get(event.recid).name,
-           componentsArray = window.multicharts[recordID],
+           componentsArray = window.multicharts[recordID].components(),
            content = '',
            i = 0;
           for(; i< componentsArray.length; ++i) {
