@@ -153,7 +153,9 @@
      $('<button/>', {
       id: 'UpdateTimescaleInputBox',
       style: 'float:right; margin-left: 15px; width: 50px',
-      }).html(updateTimescale.toString()).button().prependTo('#SynchronizationRadioButtons');
+      })
+      .addClass('LightButton').html(updateTimescale.toString())
+      .button().prependTo('#SynchronizationRadioButtons');
      $('#UpdateTimescaleInputBox').click(function() {
        $('#UpdateTimescaleInputBox').w2overlay({
         html: '<input id="UpdateTimescaleInputBoxImpl" value="' + 
