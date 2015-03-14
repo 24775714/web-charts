@@ -152,12 +152,15 @@
       */
      $('<button/>', {
       id: 'UpdateTimescaleInputBox',
-      style: 'float:right; margin-left: 15px; width: 50px'
+      style: 'float:right; margin-left: 15px; width: 50px',
       }).html(updateTimescale.toString()).button().prependTo('#SynchronizationRadioButtons');
      $('#UpdateTimescaleInputBox').click(function() {
        $('#UpdateTimescaleInputBox').w2overlay({
-        html: '<input style="width:60px" id="UpdateTimescaleInputBoxImpl" value="' + 
-        updateTimescale.toString() + '" onfocus="this.selectionStart = this.selectionEnd = this.value.length;">',
+        html: '<input id="UpdateTimescaleInputBoxImpl" value="' + 
+        updateTimescale.toString() + 
+        '" onfocus="this.selectionStart = this.selectionEnd = this.value.length;" ' +
+        'style="width:60px; border: 0; outline-color: transparent; outline-style: none;"' +
+        '>',
         name: 'UpdateTimescaleInputBoxOverlay'
        });
        $('#UpdateTimescaleInputBoxImpl').focus();
