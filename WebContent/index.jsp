@@ -58,7 +58,7 @@
        &nbsp;Continuous Update&nbsp;</label>
     </div>
     <div id="SynchronizationRadioText" class="BigFont MenuBarControl" style="margin-top: 9px">
-     Synchronization&nbsp;</div>
+     Synchronization:&nbsp;</div>
     <div id="DataStreamNameText" class="BigFont MenuBarControl"
      style="margin-top: 9px; margin-left: 50px; float:left"></div>
    </div>
@@ -108,14 +108,11 @@
      * value of the input box is not (float) numeric, a small tag to this effect is
      * displayed next to the input box.
      */
-    function validateTimescale() {
+    function validateTimescale(value) {
      var isValid =
-      w2utils.isFloat($('#UpdateTimescaleInputBox')[0].value);
-     if(!isValid) {
-      $('#UpdateTimescaleInputBox').w2tag('value must be numeric');
-      return;
-     }
-     window.updateTimescale = parseFloat($('#UpdateTimescaleInputBox')[0].value);
+      w2utils.isFloat(value);
+     if(!isValid) return false;
+     window.updateTimescale = parseFloat(value);
      window.updateTimescaleInMilliseconds = window.updateTimescale;
      switch(window.updateTimeUnits) {
      case 'ms':
@@ -130,6 +127,7 @@
       console.log('error: update timescale units are not ms, s or min as expected (value: "'
        + window.updateTimescaleInMilliseconds + '")');
      }
+     return true;
     }
     
     /*
@@ -144,15 +142,39 @@
      $('#ContinuousUpdateRadioButton').addClass('ButtonGlowSubtle');
      window.synchronizationIsOnDemand = false;
      $('#DownloadOnDemandButton').remove();
-     $('<input/>', {
+     /*
+      * Why is the following a <button> with an <input> overlay?
+      * FF8 seems to have !important line-height css properties for <input> fields.
+      * The result is that <input> fields are larger in some FF8 browsers than the
+      * height of non-<input> controls in this menu bar. If the <input> control is 
+      * instead drawn into an overlay, this problem doesn't affect the layout of the
+      * rest of this menu.
+      */
+     $('<button/>', {
       id: 'UpdateTimescaleInputBox',
-      style: 'float:right; margin-left: 15px; width: 30px',
-      title: 'the download interval',
-      value: updateTimescale.toString()
-      }).addClass('ui-corner-all').prependTo('#SynchronizationRadioButtons');
-     $('#UpdateTimescaleInputBox').keyup(function(e) {
-      if(e.keyCode == '13')
-       validateTimescale();
+      style: 'float:right; margin-left: 15px; width: 50px'
+      }).html(updateTimescale.toString()).button().prependTo('#SynchronizationRadioButtons');
+     $('#UpdateTimescaleInputBox').click(function() {
+       $('#UpdateTimescaleInputBox').w2overlay({
+        html: '<input style="width:60px" id="UpdateTimescaleInputBoxImpl" value="' + 
+        updateTimescale.toString() + '" onfocus="this.selectionStart = this.selectionEnd = this.value.length;">',
+        name: 'UpdateTimescaleInputBoxOverlay'
+       });
+       $('#UpdateTimescaleInputBoxImpl').focus();
+       $('#UpdateTimescaleInputBoxImpl').keyup(function(e) {
+        if(e.keyCode == '13') {
+         var
+          input = $('#UpdateTimescaleInputBoxImpl')[0].value,
+          result = validateTimescale(input);
+         if(!result)
+          $('#UpdateTimescaleInputBoxImpl').w2tag('value must be numeric');
+         else {
+          $('#UpdateTimescaleInputBox').children('.ui-button-text').html(input);
+          $('#w2ui-overlay-UpdateTimescaleInputBoxOverlay').hide();
+          window.updateIntervalInMiliseconds = window.updateTimescaleInMilliseconds;
+         }
+        };
+       })
      });
      $('<div/>', {
       id: 'TimescaleRadioButtons',
@@ -305,13 +327,16 @@
       var
        windowWidth = $('#ControlBar').width(),
        panelWidth = Math.floor(windowWidth / 3),
-       paddedPanelWidth = windowWidth - 2 * panelWidth - 1;  // unclear why this is -8px in safari.
+       paddedPanelWidth = windowWidth - 2 * panelWidth - 2;
       $('#AllChartsGridControlContainer, #SubscriptionsGridControlContainer')
        .css('width', panelWidth);
       $('#ActiveChartsGridControlContainer').css('width', paddedPanelWidth);
      }
-     alignConsolePanels();
-     $(window).resize(alignConsolePanels);
+     resizeDelay =  setTimeout(alignConsolePanels(), 100);
+     $(window).resize(function() { 
+      clearTimeout(resizeDelay);
+      resizeDelay = setTimeout(alignConsolePanels(), 100);
+     });
     </script>
     <!-- 
        Console 1 (LHS)
@@ -567,6 +592,7 @@
        });
       </script>
    </div>
+   
    <div id="FooterButtons">
     <div id="AllChartsGridButtonsOuter" class="FooterButtonsOuter">
      <div id="AllChartsGridButtons" class="FooterButtonsLeft">
@@ -703,7 +729,7 @@
       var
        windowWidth = $('#FooterButtons').width(),
        panelWidth = Math.floor(windowWidth / 3),
-       paddedPanelWidth = windowWidth - 2 * panelWidth - 1;  // unclear why this is -8px in safari.
+       paddedPanelWidth = windowWidth - 2 * panelWidth - 2;
       $('#AllChartsGridButtonsOuter, #SubscriptionsGridButtonsOuter')
        .css('width', panelWidth);
       $('#ActiveChartsGridButtonsOuter').css('width', paddedPanelWidth);
@@ -714,6 +740,7 @@
     <script type="text/javascript">
     </script>
    </div>
+   
   </div>
   
   <script type="text/javascript">
