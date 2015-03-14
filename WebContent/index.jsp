@@ -171,8 +171,11 @@
           result = validateTimescale(input);
          if(!result)
           $('#UpdateTimescaleInputBoxImpl').w2tag('value must be numeric');
+         else if(parseFloat(input) == 0.0)
+          $('#UpdateTimescaleInputBoxImpl').w2tag('value must be nonzero');
          else {
-          $('#UpdateTimescaleInputBox').children('.ui-button-text').html(input);
+          $('#UpdateTimescaleInputBox').children('.ui-button-text').html(
+            parseFloat(input).toString());
           $('#w2ui-overlay-UpdateTimescaleInputBoxOverlay').hide();
           window.updateIntervalInMiliseconds = window.updateTimescaleInMilliseconds;
          }
