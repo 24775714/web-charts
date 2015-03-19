@@ -115,6 +115,11 @@ function openCreateMultichartDialogue() {
   onOpen : function(event) {
    event.onComplete = function() {
     $('#w2ui-popup #form').w2render('NewMultichartSpecifyNameForm');
+    $('#MultichartName').keyup(function(e) {
+     if(e.keyCode == '13') {
+      w2ui.NewMultichartSpecifyNameForm.action("Create");
+     }
+    });
    }
   }
  });
