@@ -78,12 +78,21 @@ function openCreateMultichartDialogue() {
      if(this.validate().length == 0) {
       if(addMultichart($('#MultichartName').val(), listOfComponentCharts)) {
        w2popup.close();
+       $('#ActiveChartsGridControlContainer').w2overlay({ 
+        html: 
+         '<div style="padding: 10px; line-height: 150%">' +
+         'Added <b>' + $('#MultichartName').val().toString() + '</b> to active charts' +
+         '</div>',
+        name: 'LoadedNewChartsOverlay'
+       });
       }
+      w2ui.NewMultichartSpecifyNameForm.destroy();
      }
     },
     
     "Cancel" : function() {
      w2popup.close();
+     w2ui.NewMultichartSpecifyNameForm.destroy();
     }
    }
   });
