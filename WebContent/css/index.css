@@ -183,6 +183,14 @@ html, body {
    background-image: url("../external/jquery-ui-1.11.3/images/icon-tick.png");
 }
 
+.icon-open {
+   background-position: center;
+   background-repeat: no-repeat;
+   height: 100%;
+   width: 100%;
+   background-image: url("../external/jquery-ui-1.11.3/images/icon-open.png");
+}
+
 .ui-tooltip-content {
    font: 75% "Trebuchet MS", sans-serif;
 }

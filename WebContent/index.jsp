@@ -725,36 +725,61 @@
      </div>
     </div>
     <script type="text/javascript">
-     $(function () {
+     $(function() {
       $('#ActiveChartsGridButtons').w2toolbar({
        name: 'ActiveChartsGridButtons',
        style: 'text-align: right',
-       items: [
-        { 
-          type    : 'button', 
-          id      : 'delete',
-          caption : 'Delete',
-          icon    : 'icon-cross',
-          hint    : 'Delete'
-        }],
-       onClick: function (event) {
-        var
-         grid = w2ui['ActiveChartsGrid'],
-         selections = grid.getSelection(),
-         i = 0;
-        if(selections.length == 0) {
-         $('#ActiveChartsGridButtons').w2overlay({ 
-          html: 
-            '<div style="padding: 10px; line-height: 150%">'
-          + 'No charts are selected.'
-          + '</div>',
-          name: 'DeleteChartsNoneSelectedOverlay'
-         });
-         return;
+       items: [{ 
+        type    : 'button', 
+        id      : 'delete',
+        caption : 'Delete',
+        icon    : 'icon-cross',
+        hint    : 'Delete'
+       }, { 
+        type    : 'button', 
+        id      : 'open',
+        caption : 'Open',
+        icon    : 'icon-open',
+        hint    : 'Open'
+       }],
+       
+       onClick: function(event) {
+        if(event.target == "delete") {
+         var
+          grid = w2ui['ActiveChartsGrid'],
+          selections = grid.getSelection(),
+          i = 0;
+         if(selections.length == 0) {
+          $('#ActiveChartsGridButtons').w2overlay({ 
+           html: 
+             '<div style="padding: 10px; line-height: 150%">'
+           + 'No charts are selected.'
+            + '</div>',
+           name: 'DeleteChartsNoneSelectedOverlay'
+          });
+          return;
+         }
+         for(; i< selections.length; ++i)
+          removeMultichart(grid.get(selections[i]).name);
+         grid.refresh();
         }
-        for(; i< selections.length; ++i)
-         removeMultichart(grid.get(selections[i]).name);
-        grid.refresh();
+        else if(event.target == "open") {
+         var
+          grid = w2ui['ActiveChartsGrid'],
+          selections = grid.getSelection();
+         if(selections.length == 0) {
+          $('#ActiveChartsGridContainer').w2overlay({ 
+           html: 
+             '<div style="padding: 10px; line-height: 150%">'
+           + 'No charts are selected.'
+            + '</div>',
+           name: 'OpenChartNoneSelectedOverlay'
+          });
+          return;
+         }
+         for(var i = 0; i< selections.length; ++i)
+          createTab(selections[i]);
+        }
        }
       });
      });
