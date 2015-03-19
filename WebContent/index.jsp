@@ -267,10 +267,32 @@
         name: 'tabs',
         onClick: function (event) {
          displayTab(event.target);
-        }
+        },
+        onClose: function (event) {
+         var
+          recid = event.object.id;
+          chartName = w2ui['ActiveChartsGrid'].get(recid).name;
+         if(window.activeTabRecID == recid) {
+          window.charts[chartName].unload();
+          if(this.tabs.length == 1)
+           window.activeTabRecID = -1;
+          else {
+           for(var i = 0; i< this.tabs.length; ++i) {
+            if(this.tabs[i].id == recid) {
+             var newTabID =
+              this.tabs[(i == 0) ? 1 : i-1].id;
+             setTimeout(function() { displayTab(newTabID); }, 100);
+             break;
+            }
+           }
+          }
+         }
+         delete window.charts.chartName;
+        },
        });
       if(w2ui['tabs'].get(recid) != null) {
-       w2ui['tabs'].select(recid)
+       w2ui['tabs'].select(recid);
+       displayTab(recid);
        return;
       }
       $('#TabContent').css('background-color', 'white');
@@ -299,6 +321,7 @@
        window.charts[w2ui['ActiveChartsGrid'].get(window.activeTabRecID).name].unload();
       window.activeTabRecID = recid;
       window.charts[w2ui['ActiveChartsGrid'].get(recid).name].redraw();
+      w2ui['tabs'].select(recid);
      }
     </script>
    </div>
