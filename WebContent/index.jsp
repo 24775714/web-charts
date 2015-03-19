@@ -621,13 +621,33 @@
             availableCharts = w2ui['AvailableChartsGrid'],
             subscriptionGrid = w2ui['SubscribedChartsGrid'],
             selections = availableCharts.getSelection(),
-            i = 0;
+            i = 0,
+            numNewSubscriptions = 0;
            for(; i< selections.length; ++i) {
             var id = availableCharts.get(selections[i]).id;
-            if(subscriptionGrid.find({ id : id }).length == 0)
-             subscriptionGrid.add(availableCharts.get(selections[i]));
+            if(subscriptionGrid.find({ id : id }).length == 0) {
+             var
+              incomingRecord = availableCharts.get(selections[i]),
+              subscriptionRecord = {
+               recid: subscriptionGrid.total, 
+               id: incomingRecord.id,
+               type: incomingRecord.type
+              }
+             subscriptionGrid.add(subscriptionRecord);
+             numNewSubscriptions++;
+            }
             availableCharts.selectNone();
            }
+           if(numNewSubscriptions > 0) {
+            $('#SubscriptionsGridControlContainer').w2overlay({ 
+             html: 
+               '<div style="padding: 10px; line-height: 150%">'
+             + 'Subscribed to ' + numNewSubscriptions + ' charts.'
+             + '</div>',
+             name: 'SubscribedToNewChartsOverlay'
+            });
+           }
+           return;
           }, 150);
           break;
         }
