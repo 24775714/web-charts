@@ -269,6 +269,10 @@
          displayTab(event.target);
         }
        });
+      if(w2ui['tabs'].get(recid) != null) {
+       w2ui['tabs'].select(recid)
+       return;
+      }
       $('#TabContent').css('background-color', 'white');
       var chartName = w2ui['ActiveChartsGrid'].get(recid).name;
       w2ui['tabs'].add({
@@ -449,6 +453,7 @@
          onSave : function(event) {
           w2alert('save');
          },
+         
         });
        });
       </script>
@@ -511,7 +516,6 @@
         var grid = w2ui['ActiveChartsGrid'];
         var recid = grid.total;
         grid.add({recid: recid, name: chartInfo.name, type: chartInfo.type });
-        createTab(recid);
        }
        
        $(function() {
@@ -570,7 +574,12 @@
           $('#'+event.box_id).html('<div style="padding: 10px">' + 
             content + '</div>')
            .animate({ 'height': 100 }, 100);
+         },
+         
+         onDblClick: function(event) {
+          createTab(event.recid)
          }
+         
         });
        });
       </script>
