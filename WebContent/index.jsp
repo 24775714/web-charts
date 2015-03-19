@@ -23,24 +23,24 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Browse Charts</title>
   
-  <link rel="stylesheet" type="text/css" href="css/index.css">
-  
-  <script type="text/javascript" src="js/Dialogues.js"></script>
-  <script type="text/javascript" src="js/Queries.js"></script>
-  <script type="text/javascript" src="js/Multichart.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   
   <script type="text/javascript" src="external/jquery-1.11.2/jquery-1.11.2.min.js"></script>
   
   <link rel="stylesheet" type="text/css" href="external/jquery-ui-1.11.3/jquery-ui.css">
   <script type="text/javascript" src="external/jquery-ui-1.11.3/jquery-ui.js"></script>
   
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-   
   <script type="text/javascript" src="external/dygraphs/dygraph-combined.js"></script>
   <script type="text/javascript" src="js/DygraphLinechart.js"></script>
   
   <link rel="stylesheet" type="text/css" href="external/w2ui-1.4.2/w2ui-1.4.2.css">
   <script type="text/javascript" src="external/w2ui-1.4.2/w2ui-1.4.2.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="css/index.css">
+  
+  <script type="text/javascript" src="js/Dialogues.js"></script>
+  <script type="text/javascript" src="js/Queries.js"></script>
+  <script type="text/javascript" src="js/Multichart.js"></script>
  </head>
  
  <body>
@@ -127,6 +127,7 @@
       console.log('error: update timescale units are not ms, s or min as expected (value: "'
        + window.updateTimescaleInMilliseconds + '")');
      }
+     window.updateIntervalInMiliseconds = window.updateTimescaleInMilliseconds;
      return true;
     }
     
@@ -155,35 +156,9 @@
       style: 'float:right; margin-left: 15px; width: 50px',
       })
       .addClass('LightButton').html(updateTimescale.toString())
-      .button().prependTo('#SynchronizationRadioButtons');
-     $('#UpdateTimescaleInputBox').click(function() {
-       $('#UpdateTimescaleInputBox').w2overlay({
-        html: '<input id="UpdateTimescaleInputBoxImpl" value="' + 
-        updateTimescale.toString() + 
-        '" onfocus="this.selectionStart = this.selectionEnd = this.value.length;" ' +
-        'style="width:60px; border: 0; outline-color: transparent; outline-style: none;"' +
-        '>',
-        name: 'UpdateTimescaleInputBoxOverlay'
-       });
-       $('#UpdateTimescaleInputBoxImpl').focus();
-       $('#UpdateTimescaleInputBoxImpl').keyup(function(e) {
-        if(e.keyCode == '13') {
-         var
-          input = $('#UpdateTimescaleInputBoxImpl')[0].value,
-          result = validateTimescale(input);
-         if(!result)
-          $('#UpdateTimescaleInputBoxImpl').w2tag('value must be numeric');
-         else if(parseFloat(input) == 0.0)
-          $('#UpdateTimescaleInputBoxImpl').w2tag('value must be nonzero');
-         else {
-          $('#UpdateTimescaleInputBox').children('.ui-button-text').html(
-            parseFloat(input).toString());
-          $('#w2ui-overlay-UpdateTimescaleInputBoxOverlay').hide();
-          window.updateIntervalInMiliseconds = window.updateTimescaleInMilliseconds;
-         }
-        };
-       })
-     });
+      .floatInputFieldWithOverlay('1', window.validateTimescale)
+       .prependTo('#SynchronizationRadioButtons');
+     
      $('<div/>', {
       id: 'TimescaleRadioButtons',
       style: 'float:right; margin-left:2px'
