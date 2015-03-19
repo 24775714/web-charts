@@ -65,14 +65,9 @@ function DygraphLinechart(graphName, containerID, multichart, title, xLabel, yLa
   drawPoints: false,
   strokeWidth: 1,
   strokeBorderWidth: 0,
-  highlightSeriesOpts: {
-   strokeWidth: 1,
-   strokeBorderWidth: 0,
-   highlightCircleSize: 1
-  },
-  highlightSeriesBackgroundAlpha: 0.2,
   fillAlpha: 0.1
  };
+ this.highlightEnabled = false;
  this.loaded = false;
 }
 
@@ -162,21 +157,49 @@ DygraphLinechart.prototype.redraw = function() {
    );
   ref.graph.updateOptions({clickCallback: function(e) { ref.clickCallback(); }}, true);
  }).button());
- $('#' + this.containerID + 'DygraphButtons')
- .append($('<input/>', {
-   id: 'DygraphSmootingInputBox',
-   style: 'float:right; width: 30px; margin-right: 2px',
-   title: 'smoothing',
-   value: ref.options.rollPeriod.toString()
-   }));
- $('#DygraphSmootingInputBox').keyup(function(e) {
-  if(e.keyCode == '13')
-   ref.validateSmoothingValue();
- });
- $('#DygraphSmootingInputBox').w2field('int', { autoFormat: false });
+ 
+ $('#' + ref.containerID + 'DygraphButtons').append(
+ $('<button/>', {
+  id: 'DygraphSmootingInputBox',
+  style: 'float: right; width: 40px; margin-right: 2px'
+  })
+  .addClass('LightButton').html(ref.options.rollPeriod.toString())
+  .intInputFieldWithOverlay(
+   ref.options.rollPeriod.toString(),
+   function(value) { ref.updateSmoothingValue(value); })
+   );
  $('#' + this.containerID + 'DygraphButtons')
  .append('<div class="BigFont"' + 
- ' style="padding-top: 5px; margin-right: 2px; float:right">Smoothing:</div>');
+ ' style="padding-top: 5px; margin-right: 2px; margin-left:5px; float:right">Smoothing:</div>');
+ 
+ $('#' + ref.containerID + 'DygraphButtons').append(
+ $('<button/>', {
+  id: 'DygraphAlphaInputBox',
+  style: 'float: right; width: 40px; margin-right: 2px'
+  })
+  .addClass('LightButton').html(ref.options.fillAlpha.toString())
+  .floatInputFieldWithOverlay(
+   ref.options.fillAlpha.toString(),
+   function(value) { ref.updateAlphaValue(value); })
+   );
+ $('#' + this.containerID + 'DygraphButtons')
+ .append('<div class="BigFont"' + 
+ ' style="padding-top: 5px; margin-right: 2px; float:right">Alpha:</div>');
+ 
+ $('#' + this.containerID + 'DygraphButtons')
+ .append($('<button title="highlight focused graphs" id="HighlightDygraphButton"' +
+ ' style="float:right; margin-right: 7px"/>')
+ .append("Highlighting").click(function() {
+  ref.toggleHighligher();
+  if(ref.highlightEnabled)
+   $('#HighlightDygraphButton').addClass('ButtonGlowSubtle');
+  else
+   $('#HighlightDygraphButton').removeClass('ButtonGlowSubtle');
+  ref.graph.updateOptions({
+   'highlightSeriesOpts' : ref.options['highlightSeriesOpts'],
+   'highlightSeriesBackgroundAlpha' : ref.options['highlightSeriesBackgroundAlpha']});
+ }).button());
+ 
  if(ref.options['logscale'])
   $('#ToggleLogscaleDygraphButton').addClass('ButtonGlowSubtle');
  if(ref.options['fillGraph'])
@@ -185,32 +208,57 @@ DygraphLinechart.prototype.redraw = function() {
   $('#DrawPointsDygraphButton').addClass('ButtonGlowSubtle');
  if(ref.options['showRangeSelector'])
   $('#ShowRangeSelectorDygraphButton').addClass('ButtonGlowSubtle');
+ if(ref.highlightEnabled)
+  $('#HighlightDygraphButton').addClass('ButtonGlowSubtle');
  if(!this.loaded) {
   this.graph = new Dygraph(
-    document.getElementById(this.containerID + 'DygraphContainer'),
-    this.multichart.table(),
-    this.options
-    );
+   document.getElementById(this.containerID + 'DygraphContainer'),
+   this.multichart.table(),
+   this.options
+   );
   var ref = this;
-  this.graph.updateOptions({clickCallback: function(e) { ref.clickCallback(); }}, true);
+  this.graph.updateOptions({clickCallback: function() { ref.clickCallback(); }}, true);
   this.loaded = true;
  }
  this.refresh();
 }
 
 /*
- * Implementation detail. Validate the content of #DygraphSmootingInputBox.
+ * Implementation detail.
  */
-DygraphLinechart.prototype.validateSmoothingValue = function() {
- var isValid =
-  w2utils.isInt($('#DygraphSmootingInputBox')[0].value);
- if(!isValid) {
-  $('#DygraphSmootingInputBox').w2tag('value must be numeric');
-  return;
- }
- this.options['rollPeriod'] = parseFloat($('#DygraphSmootingInputBox')[0].value);
+DygraphLinechart.prototype.updateSmoothingValue = function(value) {
+ this.options['rollPeriod'] = parseInt(value);
  if(this.loaded)
   this.graph.updateOptions({'rollPeriod': this.options['rollPeriod']});
+}
+
+/*
+ * Implementation detail.
+ */
+DygraphLinechart.prototype.updateAlphaValue = function(value) {
+ this.options['fillAlpha'] = parseFloat(value);
+ if(this.loaded)
+  this.graph.updateOptions({'fillAlpha': this.options['fillAlpha']});
+}
+
+/*
+ * Implementation detail.
+ */
+DygraphLinechart.prototype.toggleHighligher = function() {
+ if(!this.highlightEnabled) {
+  this.options['highlightSeriesOpts'] = {
+   strokeWidth: 1,
+   strokeBorderWidth: 0,
+   highlightCircleSize: 1
+  };
+  this.options['highlightSeriesBackgroundAlpha'] = 0.2;
+  this.highlightEnabled = true;
+ }
+ else {
+  delete this.options.highlightSeriesOpts;
+  delete this.options.highlightSeriesBackgroundAlpha;
+  this.highlightEnabled = false;
+ }
 }
 
 /**
