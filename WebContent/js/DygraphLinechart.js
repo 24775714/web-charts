@@ -93,7 +93,7 @@ DygraphLinechart.prototype.redraw = function() {
  }).appendTo('#' + this.containerID);
  $('<div/>', {
   id: this.containerID + 'DygraphContainer',
-  style: 'width:100%; height: calc(100% - 40px)'
+  style: 'width:calc(100% - 10px); height: calc(100% - 40px); margin-left:10px'
  }).appendTo('#' + this.containerID);
  $('<div/>', {
   id: this.containerID + 'DygraphButtons',
