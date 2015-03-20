@@ -45,8 +45,8 @@ import servlet.data.TimestampedDatum;
 import com.google.gson.Gson;
 
 /**
- * Servlet implementation class ChartsBrowserServlet
- */
+  * Servlet implementation class ChartsBrowserServlet
+  */
 @WebServlet(
    asyncSupported = true,
    description = "Browser for data charts",
@@ -56,7 +56,8 @@ public final class ChartsBrowserServlet extends HttpServlet {
    
    private static final long serialVersionUID = 8026415575589209128L;
    
-   final static Logger logger = LoggerFactory.getLogger(ChartsBrowserServlet.class);
+   private final static Logger
+      logger = LoggerFactory.getLogger(ChartsBrowserServlet.class);
    
    private Map<String, LineChartData>
       lineChartData;
