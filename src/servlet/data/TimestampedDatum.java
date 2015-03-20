@@ -16,9 +16,16 @@
   * You should have received a copy of the GNU General Public License
   * along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
   */
-package servlet;
+package servlet.data;
 
+/**
+  * A simple immutable representation of a single time-stamped record. Possible applications
+  * of this class include Y(X) line chart data records and time stamped histogram data.
+  * 
+  * @author phillips
+  */
 public final class TimestampedDatum {
+   
    private final double
       time,
       value;
@@ -32,18 +39,36 @@ public final class TimestampedDatum {
       this.value = value;
    }
    
-   static TimestampedDatum create(
+   /** 
+     * Create a {@link TimestampedDatum} object with custom parameters.
+     * 
+     * @param time <br>
+     *        The time of this record.
+     * @param value <br>
+     *        The value of this record.
+     * @return
+     *    A valid {@link TimestampedDatum} object.
+     */
+   static public TimestampedDatum create(
       final double time,
       final double value
       ) {
       return new TimestampedDatum(time, value);
    }
    
+   /**
+     * @return
+     *    Get the time stamp value of this record.
+     */
    public double getTime() {
-      return time;
+      return this.time;
    }
    
+   /**
+     * @return
+     *    Get the value of this record.
+     */
    public double getValue() {
-      return value;
+      return this.value;
    }
 }

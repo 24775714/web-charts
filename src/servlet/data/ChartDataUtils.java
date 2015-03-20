@@ -16,7 +16,7 @@
   * You should have received a copy of the GNU General Public License
   * along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
   */
-package servlet;
+package servlet.data;
 
 import java.util.Random;
 
@@ -27,7 +27,7 @@ import com.google.common.base.Preconditions;
   * 
   * @author phillips
   */
-public class ChartDataUtils {
+public final class ChartDataUtils {
    /**
      * Create a {@link LineChartData} containing random data.
      * 
@@ -64,4 +64,6 @@ public class ChartDataUtils {
       }
       return result;
    }
+   
+   private ChartDataUtils () { }
 }

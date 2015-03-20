@@ -10,7 +10,7 @@
   </welcome-file-list>
   <servlet>
     <servlet-name>web-charts</servlet-name>
-    <servlet-class>servlet.ChartsBrowserServlet</servlet-class>
+    <servlet-class>servlet.core.ChartsBrowserServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>web-charts</servlet-name>

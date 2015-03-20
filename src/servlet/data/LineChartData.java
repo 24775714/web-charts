@@ -16,7 +16,7 @@
   * You should have received a copy of the GNU General Public License
   * along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
   */
-package servlet;
+package servlet.data;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -29,6 +29,11 @@ import java.util.TreeMap;
 
 import com.google.common.base.Preconditions;
 
+/**
+  * A local {@link NavigableMap} representation of line chart data.
+  * 
+  * @author phillips
+  */
 public final class LineChartData implements NavigableMap<Double, Double> {
    
    private final NavigableMap<Double, Double>
@@ -36,35 +41,44 @@ public final class LineChartData implements NavigableMap<Double, Double> {
    private final String
       chartName;
    
+   /**
+     * Create a {@link LineChartData} object.
+     * 
+     * @param chartName <br>
+     *        The identifying ID of this chart. This argument must be non-<code>null</code>
+     *        and non-empty.
+     */
    public LineChartData(final String chartName) {
       this.values = new TreeMap<Double, Double>();
+      if(chartName.isEmpty())
+         throw new IllegalArgumentException(getClass().getSimpleName() + ": chart name is empty.");
       this.chartName = Preconditions.checkNotNull(chartName);
    }
    
    @Override
    public int size() {
-      return values.size();
+      return this.values.size();
    }
    
    @Override
    public boolean isEmpty() {
-      return values.isEmpty();
+      return this.values.isEmpty();
    }
    
    @Override
    public boolean containsKey(
       final Object key) {
-      return values.containsKey(key);
+      return this.values.containsKey(key);
    }
    
    @Override
    public boolean containsValue(final Object value) {
-      return values.containsValue(value);
+      return this.values.containsValue(value);
    }
    
    @Override
    public Double get(final Object key) {
-      return values.get(key);
+      return this.values.get(key);
    }
    
    @Override
@@ -72,40 +86,40 @@ public final class LineChartData implements NavigableMap<Double, Double> {
       Double key,
       Double value
       ) {
-      return values.put(
+      return this.values.put(
          key,
          value);
    }
    
    @Override
    public Double remove(Object key) {
-      return values.remove(key);
+      return this.values.remove(key);
    }
    
    @Override
    public void putAll(
       Map<? extends Double, ? extends Double> m) {
-      values.putAll(m);
+      this.values.putAll(m);
    }
    
    @Override
    public void clear() {
-      values.clear();
+      this.values.clear();
    }
    
    @Override
    public Set<Double> keySet() {
-      return values.keySet();
+      return this.values.keySet();
    }
    
    @Override
    public Collection<Double> values() {
-      return values.values();
+      return this.values.values();
    }
    
    @Override
    public Set<java.util.Map.Entry<Double, Double>> entrySet() {
-      return values.entrySet();
+      return this.values.entrySet();
    }
    
    @Override
@@ -118,10 +132,10 @@ public final class LineChartData implements NavigableMap<Double, Double> {
       if (!(obj instanceof LineChartData))
          return false;
       LineChartData other = (LineChartData) obj;
-      if (chartName == null) {
+      if (this.chartName == null) {
          if (other.chartName != null)
             return false;
-      } else if (!chartName.equals(other.chartName))
+      } else if (!this.chartName.equals(other.chartName))
          return false;
       return true;
    }
@@ -131,106 +145,106 @@ public final class LineChartData implements NavigableMap<Double, Double> {
       final int prime = 31;
       int result = 1;
       result = prime * result
-         + ((chartName == null) ? 0 : chartName.hashCode());
+         + ((this.chartName == null) ? 0 : this.chartName.hashCode());
       return result;
    }
    
    @Override
    public java.util.Map.Entry<Double, Double> lowerEntry(
       Double key) {
-      return values.lowerEntry(key);
+      return this.values.lowerEntry(key);
    }
    
    @Override
    public Double lowerKey(
       Double key) {
-      return values.lowerKey(key);
+      return this.values.lowerKey(key);
    }
    
    @Override
    public java.util.Map.Entry<Double, Double> floorEntry(
       Double key) {
-      return values.floorEntry(key);
+      return this.values.floorEntry(key);
    }
    
    @Override
    public Comparator<? super Double> comparator() {
-      return values.comparator();
+      return this.values.comparator();
    }
    
    @Override
    public Double floorKey(
       Double key) {
-      return values.floorKey(key);
+      return this.values.floorKey(key);
    }
    
    @Override
    public java.util.Map.Entry<Double, Double> ceilingEntry(
       Double key) {
-      return values.ceilingEntry(key);
+      return this.values.ceilingEntry(key);
    }
    
    @Override
    public Double ceilingKey(
       Double key) {
-      return values.ceilingKey(key);
+      return this.values.ceilingKey(key);
    }
    
    @Override
    public java.util.Map.Entry<Double, Double> higherEntry(
       Double key) {
-      return values.higherEntry(key);
+      return this.values.higherEntry(key);
    }
    
    @Override
    public Double higherKey(
       Double key) {
-      return values.higherKey(key);
+      return this.values.higherKey(key);
    }
    
    @Override
    public java.util.Map.Entry<Double, Double> firstEntry() {
-      return values.firstEntry();
+      return this.values.firstEntry();
    }
    
    @Override
    public java.util.Map.Entry<Double, Double> lastEntry() {
-      return values.lastEntry();
+      return this.values.lastEntry();
    }
    
    @Override
    public java.util.Map.Entry<Double, Double> pollFirstEntry() {
-      return values.pollFirstEntry();
+      return this.values.pollFirstEntry();
    }
    
    @Override
    public java.util.Map.Entry<Double, Double> pollLastEntry() {
-      return values.pollLastEntry();
+      return this.values.pollLastEntry();
    }
    
    @Override
    public NavigableMap<Double, Double> descendingMap() {
-      return values.descendingMap();
+      return this.values.descendingMap();
    }
    
    @Override
    public Double firstKey() {
-      return values.firstKey();
+      return this.values.firstKey();
    }
    
    @Override
    public NavigableSet<Double> navigableKeySet() {
-      return values.navigableKeySet();
+      return this.values.navigableKeySet();
    }
    
    @Override
    public Double lastKey() {
-      return values.lastKey();
+      return this.values.lastKey();
    }
    
    @Override
    public NavigableSet<Double> descendingKeySet() {
-      return values.descendingKeySet();
+      return this.values.descendingKeySet();
    }
    
    @Override
@@ -239,7 +253,7 @@ public final class LineChartData implements NavigableMap<Double, Double> {
       boolean fromInclusive,
       Double toKey,
       boolean toInclusive) {
-      return values.subMap(
+      return this.values.subMap(
          fromKey,
          fromInclusive,
          toKey,
@@ -250,7 +264,7 @@ public final class LineChartData implements NavigableMap<Double, Double> {
    public NavigableMap<Double, Double> headMap(
       Double toKey,
       boolean inclusive) {
-      return values.headMap(
+      return this.values.headMap(
          toKey,
          inclusive);
    }
@@ -259,7 +273,7 @@ public final class LineChartData implements NavigableMap<Double, Double> {
    public NavigableMap<Double, Double> tailMap(
       Double fromKey,
       boolean inclusive) {
-      return values.tailMap(
+      return this.values.tailMap(
          fromKey,
          inclusive);
    }
@@ -268,7 +282,7 @@ public final class LineChartData implements NavigableMap<Double, Double> {
    public SortedMap<Double, Double> subMap(
       Double fromKey,
       Double toKey) {
-      return values.subMap(
+      return this.values.subMap(
          fromKey,
          toKey);
    }
@@ -276,17 +290,19 @@ public final class LineChartData implements NavigableMap<Double, Double> {
    @Override
    public SortedMap<Double, Double> headMap(
       Double toKey) {
-      return values.headMap(toKey);
+      return this.values.headMap(toKey);
    }
    
    @Override
    public SortedMap<Double, Double> tailMap(
       Double fromKey) {
-      return values.tailMap(fromKey);
+      return this.values.tailMap(fromKey);
    }
    
    /**
-     * Get the name of this chart. Different charts are required to have different names.
+     * @return
+     *   Get the name of this chart. Different charts are required to have different names.
+     *   This method cannot return null and cannot return the empty {@link String}.
      */
    public String name() {
       return this.chartName;

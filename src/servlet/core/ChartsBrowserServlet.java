@@ -16,7 +16,7 @@
   * You should have received a copy of the GNU General Public License
   * along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
   */
-package servlet;
+package servlet.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +36,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import servlet.data.ChartDataUtils;
+import servlet.data.ChartInformation;
+import servlet.data.LineChartData;
+import servlet.data.TimestampedDatum;
 
 import com.google.gson.Gson;
 
@@ -172,24 +177,24 @@ public final class ChartsBrowserServlet extends HttpServlet {
      *    <li> For parameters named <code>get_data_name</code> with no value
      *         the response is a single {@link String} keyed by <code>data_name</code>.
      *         This {@link String} is an identifying name for the data stream processed
-     *         by this servlet.
+     *         by this servlet.core.
      *         
      *    <li> For parameters named <code>download_data</code> the expected format 
      *         of the value array is <code>X</code> followed by <code>T</code>.
-     *         <code>X</code> is the name of a data chart known to this servlet.
+     *         <code>X</code> is the name of a data chart known to this servlet.core.
      *         <code>T</code> is a data-time string parseable as a double.
      *         The request (<code>download-data</code>, [<code>X</code>, <code>T</code>])
      *         is a request for all data belonging to chart <code>X</code> strictly
      *         after (and not including) time <code>T</code>.<br><br>
      *         
-     *         The response of the servlet is to insert a key <code>M</code> with
+     *         The response of the servlet.core is to insert a key <code>M</code> with
      *         name <code>X</code>. The value of this key is a JSON formatted 
      *         array of double pairs <code>{ t1, v1 }, { t2, v2 }</code> with
      *         <code>t > T</code> for all <code>t1, t2 ...</code>.
      *  </ul>
      * </ul>
      * 
-     * The servlet response is UTF-8 JSON.<br><br>
+     * The servlet.core response is UTF-8 JSON.<br><br>
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
@@ -224,7 +229,7 @@ public final class ChartsBrowserServlet extends HttpServlet {
             logger.error("unknown request: {}", name);
          } 
       }
-      System.out.println(gson.toJson(responseMap));
-      response.getWriter().write(gson.toJson(responseMap));
+      System.out.println(this.gson.toJson(responseMap));
+      response.getWriter().write(this.gson.toJson(responseMap));
    }
 }
