@@ -49,7 +49,7 @@ function getChartNamesFromServer() {
    log("server did not respond to query: known_charts.");
   } 
  });
- availableCharts.reload();
+ availableCharts.refresh();
 }
 
 /**
