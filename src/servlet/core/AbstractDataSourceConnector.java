@@ -1,11 +1,6 @@
 package servlet.core;
 
-import java.util.List;
-
 import com.google.common.base.Preconditions;
-
-import servlet.data.ChartInformation;
-import servlet.data.TimestampedDatum;
 
 /**
   * A skeletal implementation of the {@link DataSourceConnector} interface. This
