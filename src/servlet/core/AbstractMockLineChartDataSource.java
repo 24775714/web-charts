@@ -88,7 +88,7 @@ abstract class AbstractMockLineChartDataSource extends AbstractDataSourceConnect
          public void run() {
             for(LineChartData lineChartData : 
                AbstractMockLineChartDataSource.this.lineChartData.values()) {
-               if(lineChartData.size() >= 2000)
+               if(lineChartData.size() >= 800)
                   return;
                final int
                   numDatumsToInsert = random.nextInt(20);
