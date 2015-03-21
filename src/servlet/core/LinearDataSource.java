@@ -1,17 +1,29 @@
+/**
+  * This file is part of web-charts, an interactive web charts program.
+  *
+  * Copyright (C) 2015 John Kieran Phillips
+  * 
+  * web-charts is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+  * 
+  * web-charts is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  * 
+  * You should have received a copy of the GNU General Public License
+  * along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
+  */
 package servlet.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Map.Entry;
 
-import servlet.data.ChartInformation;
 import servlet.data.LineChartData;
-import servlet.data.TimestampedDatum;
 
 /**
   * A mock data connector that generates linear data charts. This data connector can 
@@ -27,12 +39,12 @@ import servlet.data.TimestampedDatum;
   * 
   * @author phillips
   */
-public final class LinearDataSource extends AbstractDataSourceConnector {
+public final class LinearDataSource extends AbstractMockLineChartDataSource {
    
-   private final Map<String, LineChartData>
-      lineChartData;
    private final Map<String, Double>
       gradients;
+   final Random
+      random = new Random(1L);
    
    /** 
      * Create a {@link LinearDataSource} object with custom parameters.
@@ -50,74 +62,27 @@ public final class LinearDataSource extends AbstractDataSourceConnector {
       final int numberOfChartsToGenerate,
       final long updateIntervalMilliseconds
       ) {
-      super("Linear Data Generator Data Source");
-      if(numberOfChartsToGenerate < 0)
-         throw new IllegalArgumentException(
-            getClass().getSimpleName() + ": number of charts to generate is negative (value: "
-            + numberOfChartsToGenerate + ")");
-      if(updateIntervalMilliseconds <= 1L)
-         throw new IllegalArgumentException(
-            getClass().getSimpleName() + ": update interval is less than 1 millisecond (value: "
-            + updateIntervalMilliseconds + "ms)");
-      final Random
-         random = new Random(1L);
-      (new Timer()).scheduleAtFixedRate(new TimerTask() {
-         @Override
-         public void run() {
-            for(LineChartData lineChartData : 
-               LinearDataSource.this.lineChartData.values()) {
-               if(lineChartData.size() >= 2000)
-                  return;
-               final int
-                  numNewElements = random.nextInt(20);
-               for(int i = 0; i< numNewElements; ++i) {
-                  final Entry<Double, Double>
-                     lastEntry = lineChartData.lastEntry();
-                  lineChartData.put(
-                     lastEntry.getKey() + 1.0,
-                     lastEntry.getValue() + 
-                        LinearDataSource.this.gradients.get(lineChartData.name())
-                     );
-               }
-            }
-         }
-      }, updateIntervalMilliseconds, updateIntervalMilliseconds);
-      
-      // Dummy data
-      this.lineChartData = new HashMap<String, LineChartData>();
+      super("Linear Data Generator Data Source",
+         numberOfChartsToGenerate, updateIntervalMilliseconds);
       this.gradients = new HashMap<String, Double>();
-      for(int i = 0; i< numberOfChartsToGenerate; ++i) {
-         final LineChartData
-            lineChart = new LineChartData("Linear Data " + (i + 1));
-         lineChart.put(0.0, 0.0);
-         this.lineChartData.put(lineChart.name(), lineChart);
-         this.gradients.put(lineChart.name(), random.nextDouble());
+   }
+   
+   @Override
+   protected void updateChart(LineChartData chart, int numberOfNewDatums) {
+      if(chart.isEmpty()) {
+         this.gradients.put(chart.name(), this.random.nextDouble());
+         chart.put(0.0, 0.0);
+         numberOfNewDatums--;
       }
-   }
-   
-   @Override
-   public List<ChartInformation> getKnownCharts() {
-      final List<ChartInformation>
-         result = new ArrayList<ChartInformation>();
-      for(final LineChartData chartData : this.lineChartData.values())
-         result.add(new ChartInformation(chartData.name(), "Line", chartData.size()));
-      return result;
-   }
-   
-   @Override
-   public List<TimestampedDatum> getData(
-      String chartName,
-      final double fromTimeOfInterest,
-      final boolean inclusive
-      ) {
-      final List<TimestampedDatum>
-         result = new ArrayList<TimestampedDatum>();
-      if(!this.lineChartData.containsKey(chartName))
-         return result;
-      for(Entry<Double, Double> record : 
-         this.lineChartData.get(chartName).tailMap(
-            fromTimeOfInterest, inclusive).entrySet())
-        result.add(TimestampedDatum.create(record.getKey(), record.getValue()));
-      return result;
+      final double
+         g = this.gradients.get(chart.name());
+      for(int i = 0; i< numberOfNewDatums; ++i) {
+         final Entry<Double, Double>
+            lastEntry = chart.lastEntry();
+         chart.put(
+            lastEntry.getKey() + 1.0,
+            lastEntry.getValue() + g 
+            );
+      }
    }
 }

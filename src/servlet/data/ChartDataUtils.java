@@ -18,7 +18,9 @@
   */
 package servlet.data;
 
+import java.util.NavigableMap;
 import java.util.Random;
+import java.util.TreeMap;
 
 import com.google.common.base.Preconditions;
 
@@ -28,34 +30,34 @@ import com.google.common.base.Preconditions;
   * @author phillips
   */
 public final class ChartDataUtils {
+   
    /**
-     * Create a {@link LineChartData} containing random data.
+     * Create a {@link NavigableMap} containing a random discrete Ornstein-Uhlenbeck series.
      * 
      * @param length <br>
      *        The total number of data points to generate. This argument
      *        must be non-negative.
      * @param seed <br>
      *        A {@link Long} used to seed a random number generator.
-     * @param chartName <br>
-     *        The name of the chart to generate. This argument must be non-<code>null</code>.
      * @return
-     *        A fully formed {@link LineChartData} object.
+     *        A fully formed {@link NavigableMap} object. No references to this object
+     *        are retained by this method.
      */
-   public static LineChartData createRandomLineChart(
+   public static NavigableMap<Double, Double>
+      createRandomDiscreteOrnsteinUhlenbeckSeries(
       final int length,
-      final long seed,
-      final String chartName
+      final long seed
       ) {
       Preconditions.checkArgument(
-         length >= 0, "createRandomLineChart: the length of the line chart to"
-       + " generate is negative.");
+         length >= 0, "createRandomDiscreteOrnsteinUhlenbeckSeries: the length of the data series"
+       + " to generate is negative.");
       final Random
          random = new Random(seed);
       double
          value = 0.0,
          t = 0.0;
-      final LineChartData
-         result = new LineChartData(Preconditions.checkNotNull(chartName));
+      final NavigableMap<Double, Double>
+         result = new TreeMap<Double, Double>();
       for(int i = 0; i< 300 + length; ++i) {
          value = 0.9 * value + random.nextGaussian() + 10.;
          t += 1.0;

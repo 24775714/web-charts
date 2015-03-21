@@ -1,18 +1,29 @@
+/**
+  * This file is part of web-charts, an interactive web charts program.
+  *
+  * Copyright (C) 2015 John Kieran Phillips
+  * 
+  * web-charts is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+  * 
+  * web-charts is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
+  * 
+  * You should have received a copy of the GNU General Public License
+  * along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
+  */
 package servlet.core;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Map.Entry;
 
 import servlet.data.ChartDataUtils;
-import servlet.data.ChartInformation;
 import servlet.data.LineChartData;
-import servlet.data.TimestampedDatum;
 
 /**
   * A mock data connector that generates random charts from a discrete Ornstein-Uhlenbeck
@@ -28,10 +39,10 @@ import servlet.data.TimestampedDatum;
   * 
   * @author phillips
   */
-public final class DiscreteOrnsteinUhlenbeckDataSource extends AbstractDataSourceConnector {
+public final class DiscreteOrnsteinUhlenbeckDataSource extends AbstractMockLineChartDataSource {
    
-   private Map<String, LineChartData>
-      lineChartData;
+   final Random
+      random = new Random(1L);
    
    /** 
      * Create a {@link DiscreteOrnsteinUhlenbeckDataSource} object with custom parameters.
@@ -49,70 +60,35 @@ public final class DiscreteOrnsteinUhlenbeckDataSource extends AbstractDataSourc
       final int numberOfChartsToGenerate,
       final long updateIntervalMilliseconds
       ) {
-      super("Random Discrete Ornstein Uhlenbeck Generator Data Source");
-      if(numberOfChartsToGenerate < 0)
-         throw new IllegalArgumentException(
-            getClass().getSimpleName() + ": number of charts to generate is negative (value: "
-            + numberOfChartsToGenerate + ")");
-      if(updateIntervalMilliseconds <= 1L)
-         throw new IllegalArgumentException(
-            getClass().getSimpleName() + ": update interval is less than 1 millisecond (value: "
-            + updateIntervalMilliseconds + "ms)");
-      final Random
-         random = new Random(1L);
-      (new Timer()).scheduleAtFixedRate(new TimerTask() {
-         @Override
-         public void run() {
-            for(LineChartData lineChartData : 
-               DiscreteOrnsteinUhlenbeckDataSource.this.lineChartData.values()) {
-               if(lineChartData.size() >= 2000)
-                  return;
-               final int
-                  numNewElements = random.nextInt(20);
-               for(int i = 0; i< numNewElements; ++i) {
-                  final Entry<Double, Double>
-                     lastEntry = lineChartData.lastEntry();
-                  lineChartData.put(
-                     lastEntry.getKey() + 1.0,
-                     lastEntry.getValue() * 0.9 + random.nextGaussian() + 10.0
-                     );
-               }
-            }
-         }
-      }, updateIntervalMilliseconds, updateIntervalMilliseconds);
-      
-      // Dummy data
-      this.lineChartData = new HashMap<String, LineChartData>();
-      for(int i = 0; i< numberOfChartsToGenerate; ++i) {
-         final LineChartData
-            lineChart = ChartDataUtils.createRandomLineChart(200, i, "Random Data " + (i + 1));
-         this.lineChartData.put(lineChart.name(), lineChart);
+      super("Random Discrete Ornstein Uhlenbeck Generator Data Source",
+         numberOfChartsToGenerate, updateIntervalMilliseconds);
+   }
+   
+   @Override
+   protected void updateChart(LineChartData chart, int numberOfNewDatums) {
+      /*
+       * Discrete OU processes are mean reverting, so a small amount of data needs to be
+       * generated to examine the long-term mean:
+       */
+      double
+         s;
+      if(chart.isEmpty()) {
+         final NavigableMap<Double, Double>
+            initialValues = ChartDataUtils.createRandomDiscreteOrnsteinUhlenbeckSeries(
+               200, this.random.nextLong());
+         s = initialValues.lastEntry().getValue();
+         chart.put(0.0, s);
+         numberOfNewDatums--;
       }
-   }
-   
-   @Override
-   public List<ChartInformation> getKnownCharts() {
-      final List<ChartInformation>
-         result = new ArrayList<ChartInformation>();
-      for(final LineChartData chartData : this.lineChartData.values())
-         result.add(new ChartInformation(chartData.name(), "Line", chartData.size()));
-      return result;
-   }
-   
-   @Override
-   public List<TimestampedDatum> getData(
-      String chartName,
-      final double fromTimeOfInterest,
-      final boolean inclusive
-      ) {
-      final List<TimestampedDatum>
-         result = new ArrayList<TimestampedDatum>();
-      if(!this.lineChartData.containsKey(chartName))
-         return result;
-      for(Entry<Double, Double> record : 
-         this.lineChartData.get(chartName).tailMap(
-            fromTimeOfInterest, inclusive).entrySet())
-        result.add(TimestampedDatum.create(record.getKey(), record.getValue()));
-      return result;
+      else
+         s = chart.lastEntry().getValue();
+      for(int i = 0; i< numberOfNewDatums; ++i) {
+         final Entry<Double, Double>
+            lastEntry = chart.lastEntry();
+         chart.put(
+            lastEntry.getKey() + 1.0,
+            lastEntry.getValue() * 0.9 + this.random.nextGaussian() + 10.0
+            );
+      }
    }
 }
