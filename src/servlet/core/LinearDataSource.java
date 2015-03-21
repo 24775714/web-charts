@@ -9,32 +9,33 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map.Entry;
 
-import servlet.data.ChartDataUtils;
 import servlet.data.ChartInformation;
 import servlet.data.LineChartData;
 import servlet.data.TimestampedDatum;
 
 /**
-  * A mock data connector that generates random charts from a discrete Ornstein-Uhlenbeck
-  * process. This data connector can be customised to:
+  * A mock data connector that generates linear data charts. This data connector can 
+  * be customised to:
   * 
   * <ul>
   *   <li> Generate any number of charts.
   *   <li> Update the data contained in these charts with a specified frequency.
   * </ul>
   * 
-  * See also {@link DiscreteOrnsteinUhlenbeckDataSource#DiscreteOrnsteinUhlenbeckDataSource(
+  * See also {@link LinearDataSource#LinearDataSource(
   * int, long)} and {@link DataSourceConnector}.<br><br>
   * 
   * @author phillips
   */
-public final class DiscreteOrnsteinUhlenbeckDataSource extends AbstractDataSourceConnector {
+public final class LinearDataSource extends AbstractDataSourceConnector {
    
-   private Map<String, LineChartData>
+   private final Map<String, LineChartData>
       lineChartData;
+   private final Map<String, Double>
+      gradients;
    
    /** 
-     * Create a {@link DiscreteOrnsteinUhlenbeckDataSource} object with custom parameters.
+     * Create a {@link LinearDataSource} object with custom parameters.
      * <br><br>
      * 
      * See also {@link DataSourceConnector}.
@@ -45,11 +46,11 @@ public final class DiscreteOrnsteinUhlenbeckDataSource extends AbstractDataSourc
      *        The rate at which to update charts in milliseconds. This argument should
      *        be greater than or equal to <code>1</code>.
      */
-   public DiscreteOrnsteinUhlenbeckDataSource(
+   public LinearDataSource(
       final int numberOfChartsToGenerate,
       final long updateIntervalMilliseconds
       ) {
-      super("Random Discrete Ornstein Uhlenbeck Generator Data Source");
+      super("Linear Data Generator Data Source");
       if(numberOfChartsToGenerate < 0)
          throw new IllegalArgumentException(
             getClass().getSimpleName() + ": number of charts to generate is negative (value: "
@@ -64,7 +65,7 @@ public final class DiscreteOrnsteinUhlenbeckDataSource extends AbstractDataSourc
          @Override
          public void run() {
             for(LineChartData lineChartData : 
-               DiscreteOrnsteinUhlenbeckDataSource.this.lineChartData.values()) {
+               LinearDataSource.this.lineChartData.values()) {
                if(lineChartData.size() >= 2000)
                   return;
                final int
@@ -74,7 +75,8 @@ public final class DiscreteOrnsteinUhlenbeckDataSource extends AbstractDataSourc
                      lastEntry = lineChartData.lastEntry();
                   lineChartData.put(
                      lastEntry.getKey() + 1.0,
-                     lastEntry.getValue() * 0.9 + random.nextGaussian() + 10.0
+                     lastEntry.getValue() + 
+                        LinearDataSource.this.gradients.get(lineChartData.name())
                      );
                }
             }
@@ -83,10 +85,13 @@ public final class DiscreteOrnsteinUhlenbeckDataSource extends AbstractDataSourc
       
       // Dummy data
       this.lineChartData = new HashMap<String, LineChartData>();
+      this.gradients = new HashMap<String, Double>();
       for(int i = 0; i< numberOfChartsToGenerate; ++i) {
          final LineChartData
-            lineChart = ChartDataUtils.createRandomLineChart(200, i, "Random Data " + (i + 1));
+            lineChart = new LineChartData("Linear Data " + (i + 1));
+         lineChart.put(0.0, 0.0);
          this.lineChartData.put(lineChart.name(), lineChart);
+         this.gradients.put(lineChart.name(), random.nextDouble());
       }
    }
    

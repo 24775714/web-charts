@@ -64,7 +64,7 @@ public final class ChartsBrowserServlet extends HttpServlet implements DataSourc
      * @see HttpServlet#HttpServlet()
      */
    public ChartsBrowserServlet() {
-      this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(20, 1000L);
+      this.dataSourceConnector = new LinearDataSource(20, 1000L);
       this.gson = new Gson();
    }
    

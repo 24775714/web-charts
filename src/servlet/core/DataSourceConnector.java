@@ -37,7 +37,6 @@ public interface DataSourceConnector {
      */
    public List<ChartInformation> getKnownCharts();
    
-   
    /** 
      * Get an ordered data array for the chart with the specified name. If no such chart
      * is known to this data source, this method returns an empty non-<code>null</code>
