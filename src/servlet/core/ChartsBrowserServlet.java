@@ -19,13 +19,9 @@
 package servlet.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
@@ -36,10 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import servlet.data.ChartDataUtils;
 import servlet.data.ChartInformation;
-import servlet.data.LineChartData;
 import servlet.data.TimestampedDatum;
 
 import com.google.gson.Gson;
@@ -52,15 +45,15 @@ import com.google.gson.Gson;
    description = "Browser for data charts",
    urlPatterns = { "/ChartsBrowserServlet" }
    )
-public final class ChartsBrowserServlet extends HttpServlet {
+public final class ChartsBrowserServlet extends HttpServlet implements DataSourceConnector {
    
    private static final long serialVersionUID = 8026415575589209128L;
    
    private final static Logger
       logger = LoggerFactory.getLogger(ChartsBrowserServlet.class);
    
-   private Map<String, LineChartData>
-      lineChartData;
+   private final DataSourceConnector
+      dataSourceConnector;
    
    private final Gson
       gson;
@@ -71,38 +64,15 @@ public final class ChartsBrowserServlet extends HttpServlet {
      * @see HttpServlet#HttpServlet()
      */
    public ChartsBrowserServlet() {
-      super();
-      // Dummy data
-      this.lineChartData = new HashMap<String, LineChartData>();
-      for(int i = 0; i< 5; ++i) {
-         final LineChartData
-            lineChart = ChartDataUtils.createRandomLineChart(200, i, "Random Data " + (i + 1));
-         this.lineChartData.put(lineChart.name(), lineChart);
-      }
+      this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(20, 1000L);
       this.gson = new Gson();
-      final Random
-         random = new Random(1L);
-      (new Timer()).scheduleAtFixedRate(new TimerTask() {
-         @Override
-         public void run() {
-            for(LineChartData lineChartData : ChartsBrowserServlet.this.lineChartData.values()) {
-               if(lineChartData.size() >= 2000)
-                  return;
-               final int
-                  numNewElements = random.nextInt(20);
-               for(int i = 0; i< numNewElements; ++i) {
-                  final Entry<Double, Double>
-                     lastEntry = lineChartData.lastEntry();
-                  lineChartData.put(
-                     lastEntry.getKey() + 1.0,
-                     lastEntry.getValue() * 0.9 + random.nextGaussian() + 10.0
-                     );
-               }
-            }
-         }
-      }, 1000L, 1000L);
    }
    
+   /**
+     * Process a GET HTTP request.
+     * 
+     * In the current implementation all requests are handled via POST.
+     */
    protected void doGet(
       final HttpServletRequest request, 
       HttpServletResponse response
@@ -114,30 +84,26 @@ public final class ChartsBrowserServlet extends HttpServlet {
    /**
      * Process a <code>list_known_charts</code> request.
      * 
-     * @param results <br>
-     *        The map to which responses are to be inserted.
+     * @param responseMap <br>
+     *        The map to which responses are to be inserted. This argument must be
+     *        non-<code>null</code>.
      */
    private void listKnownCharts(Map<String, String> responseMap) {
-      final Gson
-         gson = new Gson();
-      List<ChartInformation>
-         chartInfoList = new ArrayList<ChartInformation>();
-      for(final LineChartData dataset : this.lineChartData.values())
-         chartInfoList.add(
-            new ChartInformation(
-               dataset.name(),
-               "Line",
-               dataset.size()
-               )
-            );
-      responseMap.put("known_charts", gson.toJson(chartInfoList));
+      responseMap.put("known_charts", this.gson.toJson(this.dataSourceConnector.getKnownCharts()));
    }
    
+   /**
+     * Process a <code>get_data_name</code> request.
+     * 
+     * @param responseMap <br>
+     *        The map to which responses are to be inserted. This argument must be
+     *        non-<code>null</code>.
+     */
    private void processGetDataNameRequest(Map<String, String> responseMap) {
-      responseMap.put("data_name", "Server 1");
+      responseMap.put("data_name", this.dataSourceConnector.getDataSourceName());
    }
    
-   private static class DownloadDataRequest {
+   private static final class DownloadDataRequest {
       private String
          chartName;
       private double
@@ -149,8 +115,9 @@ public final class ChartsBrowserServlet extends HttpServlet {
      * 
      * @param values <br>
      *        The raw value list for this parameter.
-     * @param results <br>
-     *        The map to which responses are to be inserted.
+     * @param responseMap <br>
+     *        The map to which responses are to be inserted. This argument must be
+     *        non-<code>null</code>.
      */
    private void processDownloadDataRequest(
       final String requestString,
@@ -159,16 +126,13 @@ public final class ChartsBrowserServlet extends HttpServlet {
       final DownloadDataRequest
          request = this.gson.fromJson(requestString, DownloadDataRequest.class);
       final List<TimestampedDatum>
-         result = new ArrayList<TimestampedDatum>();
-      for(Entry<Double, Double> record : 
-          this.lineChartData.get(request.chartName).tailMap(
-             request.timeOfInterest, false).entrySet())
-         result.add(TimestampedDatum.create(record.getKey(), record.getValue()));
+         result = this.dataSourceConnector.getData(
+            request.chartName, request.timeOfInterest, false);
       results.put(request.chartName, this.gson.toJson(result));
    }
    
    /**
-     * The POST response generator. This servelet responds as follows:
+     * The POST response generator. This Servlet responds as follows:
      * 
      * <ul>
      *    <li> For parameters named <code>list_known_charts</code> with no value
@@ -232,5 +196,29 @@ public final class ChartsBrowserServlet extends HttpServlet {
       }
       System.out.println(this.gson.toJson(responseMap));
       response.getWriter().write(this.gson.toJson(responseMap));
+   }
+   
+   @Override
+   public final String getDataSourceName() {
+      return this.dataSourceConnector.getDataSourceName();
+   }
+   
+   @Override
+   public final String getDataSourceID() {
+      return this.dataSourceConnector.getDataSourceID();
+   }
+   
+   @Override
+   public List<ChartInformation> getKnownCharts() {
+      return this.dataSourceConnector.getKnownCharts();
+   }
+   
+   @Override
+   public List<TimestampedDatum> getData(
+      final String chartName,
+      final double fromTimeOfInterest,
+      final boolean inclusive
+      ) {
+      return this.dataSourceConnector.getData(chartName, fromTimeOfInterest, inclusive);
    }
 }

@@ -3,6 +3,7 @@ package servlet.core;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import servlet.data.ChartInformation;
 import servlet.data.TimestampedDatum;
 
 /**
@@ -31,10 +32,11 @@ public interface DataSourceConnector {
    
    /**
      * @return
-     *    Get an ordered set of chart names known to this data source. This method may
-     *    return an empty set of chart names but cannot return <code>null</code>.
+     *    Get an ordered {@link List} of {@link ChartInformation} objects for charts known
+     *    to this {@link DataSourceConnector}. This method may return an empty {@link List}
+     *    but cannot return <code>null</code>.
      */
-   public LinkedHashSet<String> listKnownCharts();
+   public List<ChartInformation> getKnownCharts();
    
    
    /** 
