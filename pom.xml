@@ -62,5 +62,11 @@
      <artifactId>commons-lang3</artifactId>
      <version>3.3.2</version>
     </dependency>
+    <dependency>
+     <groupId>com.univocity</groupId>
+     <artifactId>univocity-parsers</artifactId>
+     <version>1.4.0</version>
+     <type>jar</type>
+    </dependency>
   </dependencies>
 </project>

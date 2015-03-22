@@ -97,7 +97,7 @@ public final class ChartsBrowserServletRequestFilter implements Filter {
          if(maxConcurrentRequests <= 0)
             throw new IllegalArgumentException();
          this.gate = new Semaphore(maxConcurrentRequests);
-         logger.info("servlet filter gate size is " + maxConcurrentRequests);
+         logger.info("servlet gate size is " + maxConcurrentRequests + ".");
       }
       catch(final NumberFormatException e) {
          logger.error("the expression '" + gateSizeSz + "' is not a valid integer.");
