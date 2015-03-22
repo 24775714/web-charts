@@ -437,7 +437,7 @@ input[type=checkbox].w2ui-toggle:focus {
   -o-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
   width: 200px;
-  height: 80px;
+/*height: 80px;*/
   padding: 30px 8px;
   white-space: nowrap;
   text-overflow: ellipsis;
