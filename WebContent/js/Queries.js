@@ -67,9 +67,9 @@ function getDataStreamNameFromServer() {
 }
 
 /**
-  * Retrieve all updated chart data from the servlet.
+  * Retrieve all subscribed chart data from the servlet.
   */
-function getChartDataFromServer() {
+function getChartDataFromServerForAllSubscribedCharts() {
  var request = [];
  for(var i = 0; i< w2ui['SubscribedChartsGrid'].total; ++i) {
   var
@@ -105,6 +105,60 @@ function getChartDataFromServer() {
    };
   },
   error: function(x,e){
+  } 
+ });
+}
+
+/**
+  * Retrieve data for one particular subscribed chart from the servlet. This method will
+  * log an error and return if the name of the chart does not appear in the chart subscription
+  * grid.
+  * 
+  * @param chartName <br>
+  *        The name of the chart for which to download data.
+  * @param callback <br>
+  *        A function callback to execute when the ajax request is complete.
+  */
+function getChartDataFromServer(chartName, callback) {
+ if(w2ui['SubscribedChartsGrid'].find({id: chartName}) == null) {
+  console.log('cannot perform download_data request for chart "' + chartName + '" as this chart '
+  + 'does not appear in the subscription list.');
+  return;
+ }
+ if(!window.chartData.hasOwnProperty(chartName)) {
+  var data = new google.visualization.DataTable();
+  data.addColumn('number', 'Time');
+  data.addColumn('number', chartName);
+  window.chartData[chartName] = data;
+ }
+ var
+  dataTable = window.chartData[chartName],
+  size = dataTable.getNumberOfRows(),
+  request = [];
+ request.push(JSON.stringify(
+  { chartName: chartName, timeOfInterest: size == 0. ? 
+    -Number.MAX_VALUE : dataTable.getValue(size - 1, 0) }));
+ var callback_ = callback;
+ $.ajax({
+  type: 'POST',
+  url: servlet,
+  data: { download_data : request },
+  traditional: true,
+  async: true,
+  success: function(response){
+   for(var key in response) {
+    var
+     data = window.chartData[key];
+     packet = JSON.parse(response[key]);
+    for(var i = 0; i< packet.length; ++i) {
+     var datum = packet[i];
+     data.addRow([datum.time, datum.value]);
+    }
+   };
+   callback_(chartName);
+  },
+  error: function(x,e){
+   console.log('servlet download_data request failed.');
   } 
  });
 }
