@@ -52,8 +52,12 @@ public interface DataSourceConnector {
      *    Get an ordered {@link List} of {@link ChartInformation} objects for charts known
      *    to this {@link DataSourceConnector}. This method may return an empty {@link List}
      *    but cannot return <code>null</code>.
+     * @throws DataSourceException if the underlying data connection has failed, or if the
+     *         request made to this method was valid but the data connection could not 
+     *         provide the result because of the state of the connection.
      */
-   public List<ChartInformation> getKnownCharts();
+   public List<ChartInformation> getKnownCharts()
+      throws DataSourceException;
    
    /** 
      * Get an ordered data array for the chart with the specified name. If no such chart
@@ -72,10 +76,50 @@ public interface DataSourceConnector {
      *        exclusive in the resulting data.
      * @return
      *    A valid {@link List} of {@link TimestampedDatum} objects.
+     * @throws DataSourceException if the underlying data connection has failed, or if the
+     *         request made to this method was valid but the data connection could not 
+     *         provide the result because of the state of the connection.
      */
    public List<TimestampedDatum> getData(
       final String chartName,
       final double fromTimeOfInterest,
       final boolean inclusive
-      );
+      ) throws DataSourceException;
+   
+   /**
+     * A simple exception indicating a problem with the data connection.
+     * 
+     * @author phillips
+     */
+   public final class DataSourceException extends Exception {
+      
+      /**
+        * Create a {@link DataSourceException} with no exception message.
+        */
+      public DataSourceException() { super(); }
+      
+      /**
+        * Create a {@link DataSourceException} with an exception message.
+        * 
+        * @param message <br>
+        *        The exception message. If this argument is <code>null</code>, the
+        *        exception message is taken to be the empty {@link String}.
+        */
+      public DataSourceException(final String message) {
+         super(message == null ? "" : message);
+      }
+      
+      /**
+        * Create a {@link DataSourceException} with a {@link Throwable} cause.
+        * 
+        * @param cause <br>
+        *        The cause of the {@link DataSourceException}. This argument should
+        *        be non-<code>null</code>.
+        */
+      public DataSourceException(Throwable cause) {
+         super(cause);
+      }
+      
+      private static final long serialVersionUID = 3444706161307784699L;
+   }
 }
