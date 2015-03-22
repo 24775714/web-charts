@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import servlet.data.ChartInformation;
+
+import servlet.core.DataSourceConnector.DataSourceException;
 import servlet.data.TimestampedDatum;
 
 import com.google.gson.Gson;
@@ -45,7 +46,7 @@ import com.google.gson.Gson;
    description = "Browser for data charts",
    urlPatterns = { "/ChartsBrowserServlet" }
    )
-public final class ChartsBrowserServlet extends HttpServlet implements DataSourceConnector {
+public final class ChartsBrowserServlet extends HttpServlet {
    
    private static final long serialVersionUID = 8026415575589209128L;
    
@@ -89,7 +90,12 @@ public final class ChartsBrowserServlet extends HttpServlet implements DataSourc
      *        non-<code>null</code>.
      */
    private void listKnownCharts(Map<String, String> responseMap) {
-      responseMap.put("known_charts", this.gson.toJson(this.dataSourceConnector.getKnownCharts()));
+      try {
+         responseMap.put("known_charts", this.gson.toJson(
+            this.dataSourceConnector.getKnownCharts()));
+      } catch (final DataSourceException e) {
+         responseMap.put("known_charts", this.gson.toJson(""));
+      }
    }
    
    /**
@@ -125,10 +131,15 @@ public final class ChartsBrowserServlet extends HttpServlet implements DataSourc
       ) {
       final DownloadDataRequest
          request = this.gson.fromJson(requestString, DownloadDataRequest.class);
-      final List<TimestampedDatum>
-         result = this.dataSourceConnector.getData(
-            request.chartName, request.timeOfInterest, false);
-      results.put(request.chartName, this.gson.toJson(result));
+      try {
+         final List<TimestampedDatum>
+            result = this.dataSourceConnector.getData(
+               request.chartName, request.timeOfInterest, false);
+         results.put(request.chartName, this.gson.toJson(result));
+      }
+      catch(final DataSourceException e) {
+         results.put(request.chartName, this.gson.toJson(""));
+      }
    }
    
    /**
@@ -194,31 +205,6 @@ public final class ChartsBrowserServlet extends HttpServlet implements DataSourc
             logger.error("unknown request: {}", name);
          } 
       }
-      System.out.println(this.gson.toJson(responseMap));
       response.getWriter().write(this.gson.toJson(responseMap));
-   }
-   
-   @Override
-   public final String getDataSourceName() {
-      return this.dataSourceConnector.getDataSourceName();
-   }
-   
-   @Override
-   public final String getDataSourceID() {
-      return this.dataSourceConnector.getDataSourceID();
-   }
-   
-   @Override
-   public List<ChartInformation> getKnownCharts() {
-      return this.dataSourceConnector.getKnownCharts();
-   }
-   
-   @Override
-   public List<TimestampedDatum> getData(
-      final String chartName,
-      final double fromTimeOfInterest,
-      final boolean inclusive
-      ) {
-      return this.dataSourceConnector.getData(chartName, fromTimeOfInterest, inclusive);
    }
 }
