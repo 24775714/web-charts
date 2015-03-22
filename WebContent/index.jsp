@@ -43,8 +43,11 @@
   <script type="text/javascript" src="js/Multichart.js"></script>
  </head>
  
- <body>
+ <body onLoad="onLoadCallback()">
   <div id="Site">
+   <script type="text/javascript">
+    w2utils.lock($('#Site'), { spinner: true, msg: '&nbsp;&nbsp;Loading...', opacity : 0.6 });
+   </script>
    <div id="MenuBar">
     <div class="MenuBarRightDivider"></div>
     <div id="SynchronizationRadioButtons" class="MenuBarControl">
@@ -403,24 +406,46 @@
         } ],
         
         onReload : function(event) {
-          $('#AllChartsGridControlContainer').w2overlay({ 
-           html: 
-             '<div style="padding: 10px; line-height: 150%">' +
-             (this.total == 0 ?
-               'No charts were found.' : 'Found a total of ' + this.total + ' charts') +
-             '</div>',
-           name: 'LoadedNewChartsOverlay'
-         });
+         availableChartsGridReloadCallback();
         }
        });
       });
       
+      function availableChartsGridReloadCallback() {
+       $('#AllChartsGridControlContainer').w2overlay({ 
+        html: 
+          '<div style="padding: 10px; line-height: 150%">' +
+          (this.total == 0 ?
+            'No charts were found.' : 'Found a total of ' + w2ui['AvailableChartsGrid'].total
+            + ' charts') +
+          '</div>',
+        name: 'LoadedNewChartsOverlay'
+       });
+      }
+      
+      // The ID/recid pairs of all charts listed in the AvailableChartsGrid w2ui grid.
+      var availableChartNames = {};
+      
       /**
-        * Add a chart with the specified name to the 'available charts' display.
+        * Add a collection of charts to the 'available charts' display. This method inserts
+        * as many records as possible in batch to avoid slowdown.
         */
-      function addChartToAvailableChartsList(chartInfo) {
-       var grid = w2ui['AvailableChartsGrid'];
-       grid.add({recid: grid.total, id: chartInfo.id, type: chartInfo.type, size: chartInfo.size });
+      function addAllChartsToAvailableChartsList(chartsInfo) {
+       var
+        grid = w2ui['AvailableChartsGrid'],
+        newCharts = [];
+       for(var i = 0; i< chartsInfo.length; ++i) {
+        var record = chartsInfo[i];
+        if(!window.availableChartNames.hasOwnProperty(record.id)) {
+         record.recid = grid.total + newCharts.length;
+         window.availableChartNames[record.id] = record.recid;
+         newCharts.push(record);
+        }
+        else
+         grid.get(availableChartNames[record.id]).size = record.size;
+       }
+       grid.add(newCharts);
+       availableChartsGridReloadCallback();
       }
      </script>
      <!--
@@ -862,6 +887,10 @@
    google.load("visualization", "1", {packages:["corechart"]});
    $(document).tooltip();
    setDataStreamNames(getDataStreamNameFromServer());
+   
+   function onLoadCallback() {
+    w2utils.unlock($('#Site'));
+   }
   </script>
  </body>
 </html>
