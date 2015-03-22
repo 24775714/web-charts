@@ -113,6 +113,8 @@ html, body {
    padding: 0px;
    display: inline-block;
    float: left;
+   border: 1px solid silver;
+   border-radius: 2px;
 }
 
 /* A horizontal footer button bar at the base of the UI. */
