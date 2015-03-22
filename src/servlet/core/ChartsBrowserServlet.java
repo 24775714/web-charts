@@ -37,6 +37,7 @@ import servlet.core.DataSourceConnector.DataSourceException;
 import servlet.data.TimestampedDatum;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
   * Servlet implementation class ChartsBrowserServlet
@@ -66,7 +67,7 @@ public final class ChartsBrowserServlet extends HttpServlet {
      */
    public ChartsBrowserServlet() {
       this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(5, 1000L);
-      this.gson = new Gson();
+      this.gson = new GsonBuilder().create();
    }
    
    /**
