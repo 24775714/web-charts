@@ -301,7 +301,7 @@
       $('#TabContent').css('background-color', 'white');
       var chartName = w2ui['ActiveChartsGrid'].get(recid).name;
       w2ui['tabs'].add({
-       id: recid,
+       id: recid.toString(),
        caption: chartName,
        closable: true
        });
@@ -357,6 +357,8 @@
        provides a refresh button and checkboxes for each known chart.
     -->
     <script type="text/javascript">
+      var availableChartsPopulationMemory = 0;
+      
       $(function() {
        $('#AllChartsGridControlContainer').w2grid({
         name : 'AvailableChartsGrid',
@@ -412,6 +414,9 @@
       });
       
       function availableChartsGridReloadCallback() {
+       if(window.availableChartsPopulationMemory == w2ui['AvailableChartsGrid'].total)
+        return;
+       window.availableChartsPopulationMemory = w2ui['AvailableChartsGrid'].total;
        $('#AllChartsGridControlContainer').w2overlay({ 
         html: 
           '<div style="padding: 10px; line-height: 150%">' +
@@ -457,6 +462,75 @@
        function redrawChart(chartName) {
         if(window.charts.hasOwnProperty(chartName))
          window.charts[chartName].refresh();
+       }
+       
+       // The name/recid pairs of all entries in the subscription grid.
+       var subscribedChartNames = {};
+       
+       // The number of charts still to download
+       var numPendingDownloads = 0;
+       
+       /*
+        * Add a range of charts to the subscription grid.
+        *
+        * @param availableChartRecIDs
+        *        An array of record IDs. Each element in this array is a record ID
+        *        in the AvailableChartsGrid control. For each such record not already
+        *        installed in the subscription grid, the corresponding chart will be
+        *        downloaded once.
+        */
+       function addToSubscriptionGrid(availableChartRecIDs) {
+        if(availableChartRecIDs == null) return;
+        if(availableChartRecIDs.length == 0) return;
+        var
+         availableCharts = w2ui['AvailableChartsGrid'],
+         subscribedCharts = w2ui['SubscribedChartsGrid'],
+         lockedSubscriptionGrid = false;
+        for(var i = 0; i< availableChartRecIDs.length; ++i) {
+         var
+          recid = availableChartRecIDs[i],
+          id = availableCharts.get(recid).id;
+         if(!subscribedChartNames.hasOwnProperty(id)) {
+          window.subscribedChartNames[id] = -recid;
+          ++numPendingDownloads;
+          if(!lockedSubscriptionGrid) {
+           subscribedCharts.lock(
+             { spinner: true, 
+               msg: 'Downloading Charts...',
+               opacity : 0.6 });
+           subscribedCharts.refresh();
+           lockedSubscriptionGrid = true;
+          }
+          getChartDataFromServer(id, initialDataDownoadCompleteCallback);
+         }
+        }
+       }
+       
+       function initialDataDownoadCompleteCallback(chartName) {
+        var
+         recid = -window.subscribedChartNames[chartName];
+         availableCharts = w2ui['AvailableChartsGrid'],
+         subscriptionGrid = w2ui['SubscribedChartsGrid'],
+         incomingRecord = availableCharts.get(recid),
+         subscriptionRecord = {
+          recid: subscriptionGrid.total, 
+          id: incomingRecord.id,
+          type: incomingRecord.type
+         };
+        window.subscribedChartNames[chartName] = subscriptionRecord.recid; 
+        subscriptionGrid.add(subscriptionRecord);
+        --numPendingDownloads;
+        if(numPendingDownloads == 0) {
+         subscriptionGrid.unlock();
+         subscriptionGrid.refresh();
+         $('#SubscriptionsGridControlContainer').w2overlay({ 
+          html: 
+            '<div style="padding: 10px; line-height: 150%">'
+          + 'Downloaded new charts.'
+          + '</div>',
+          name: 'SubscribedToNewChartsOverlay'
+         });
+        }
        }
        
        $(function() {
@@ -544,7 +618,7 @@
          return false;
         }
         window.multicharts[multichartName] = new Multichart(multichartName, components);
-        addChartToActiveChartsList({name: multichartName, type: 'line'});
+        addChartToActiveChartsList({name: multichartName, type: 'Line'});
         return true;
        }
        
@@ -678,32 +752,8 @@
             availableCharts = w2ui['AvailableChartsGrid'],
             subscriptionGrid = w2ui['SubscribedChartsGrid'],
             selections = availableCharts.getSelection(),
-            i = 0,
-            numNewSubscriptions = 0;
-           for(; i< selections.length; ++i) {
-            var id = availableCharts.get(selections[i]).id;
-            if(subscriptionGrid.find({ id : id }).length == 0) {
-             var
-              incomingRecord = availableCharts.get(selections[i]),
-              subscriptionRecord = {
-               recid: subscriptionGrid.total, 
-               id: incomingRecord.id,
-               type: incomingRecord.type
-              }
-             subscriptionGrid.add(subscriptionRecord);
-             numNewSubscriptions++;
-            }
-            availableCharts.selectNone();
-           }
-           if(numNewSubscriptions > 0) {
-            $('#SubscriptionsGridControlContainer').w2overlay({ 
-             html: 
-               '<div style="padding: 10px; line-height: 150%">'
-             + 'Subscribed to ' + numNewSubscriptions + ' charts.'
-             + '</div>',
-             name: 'SubscribedToNewChartsOverlay'
-            });
-           }
+            i = 0;
+           addToSubscriptionGrid(selections);
            return;
           }, 150);
           break;
@@ -784,8 +834,11 @@
           });
           return;
          }
-         for(; i< selections.length; ++i)
-          removeMultichart(grid.get(selections[i]).name);
+         for(; i< selections.length; ++i) {
+          var record = grid.get(selections[i]);
+          w2ui['tabs'].animateClose(record.recid);
+          removeMultichart(record.name);
+         }
          grid.refresh();
         }
         else if(event.target == "open") {
@@ -869,7 +922,7 @@
    function downloadOnce() {
     try {
      getChartNamesFromServer();
-     getChartDataFromServer();
+     getChartDataFromServerForAllSubscribedCharts();
      redrawActiveChart();
     }
     catch(err) {

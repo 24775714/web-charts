@@ -251,7 +251,7 @@ DygraphLinechart.prototype.toggleHighligher = function() {
    strokeBorderWidth: 0,
    highlightCircleSize: 1
   };
-  this.options['highlightSeriesBackgroundAlpha'] = 0.2;
+  this.options['highlightSeriesBackgroundAlpha'] = 0.7;
   this.highlightEnabled = true;
  }
  else {
