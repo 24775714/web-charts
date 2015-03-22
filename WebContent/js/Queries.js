@@ -33,15 +33,7 @@ function getChartNamesFromServer() {
   traditional: true,
   async: false,
   success: function(response){
-   $.each(JSON.parse(response['known_charts']), function(index, element) {
-    var chartRecId = availableCharts.find({ id : element.id });
-    if(chartRecId.length != 0) {
-     availableCharts.get(chartRecId).size = element.size;
-     return;
-    }
-    chartRecId = availableCharts.total;
-    addChartToAvailableChartsList(element);
-   });
+   addAllChartsToAvailableChartsList(JSON.parse(response['known_charts']));
   },
   error: function(x,e){
    w2ui['AvailableChartsGrid'].clear();
