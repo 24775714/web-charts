@@ -22,8 +22,6 @@ import java.util.NavigableMap;
 import java.util.Random;
 import java.util.TreeMap;
 
-import com.google.common.base.Preconditions;
-
 /**
   * Static utility functions for chart data.
   * 
@@ -42,15 +40,18 @@ public final class ChartDataUtils {
      * @return
      *        A fully formed {@link NavigableMap} object. No references to this object
      *        are retained by this method.
+     * @throws IllegalArgumentException 
+     *        If <code>length</code> is negative.
      */
    public static NavigableMap<Double, Double>
       createRandomDiscreteOrnsteinUhlenbeckSeries(
       final int length,
       final long seed
       ) {
-      Preconditions.checkArgument(
-         length >= 0, "createRandomDiscreteOrnsteinUhlenbeckSeries: the length of the data series"
-       + " to generate is negative.");
+      if(length < 0)
+         throw new IllegalArgumentException(
+            "createRandomDiscreteOrnsteinUhlenbeckSeries: the length of the data series"
+          + " to generate is negative.");
       final Random
          random = new Random(seed);
       double
