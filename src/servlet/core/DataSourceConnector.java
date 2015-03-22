@@ -18,7 +18,10 @@
   */
 package servlet.core;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import servlet.data.ChartInformation;
 import servlet.data.TimestampedDatum;
@@ -85,6 +88,39 @@ public interface DataSourceConnector {
       final double fromTimeOfInterest,
       final boolean inclusive
       ) throws DataSourceException;
+   
+   /**
+     * Get ordered data arrays for the charts with the specified names. This method returns a
+     * {@link Map} whose keys are the elements in the first argument. If, for any such key,
+     * no such chart is known to this data source, this method returns an empty
+     * non-<code>null</code> {@link List} in the corresponding key value slot. Otherwise this
+     * method returns all data (in order of increasing time stamps) on or after the time of 
+     * interest for the specified chart in the corresponding key value slot.
+     * 
+     * @param chartNames <br>
+     *        The names of the charts to query. This argument must be non-<code>null</code>.
+     * @param fromTimeOfInterest (<code>T</code>) <br> 
+     *        The time after which data is required for this chart.
+     * @param inclusive <br>
+     *        Whether or not <code>T</code> is to be considered inclusive or
+     *        exclusive in the resulting data.
+     * @return
+     *    A valid {@link List} of {@link TimestampedDatum} objects.
+     * @throws DataSourceException if the underlying data connection has failed, or if the
+     *         request made to this method was valid but the data connection could not 
+     *         provide the result because of the state of the connection.
+     */
+   public default Map<String, List<TimestampedDatum>> getData(
+      final Set<String> chartNames,
+      final double fromTimeOfInterest,
+      final boolean inclusive
+      ) throws DataSourceException {
+      final Map<String, List<TimestampedDatum>>
+         result = new HashMap<String, List<TimestampedDatum>>();
+      for(final String record : chartNames)
+         result.put(record, getData(record, fromTimeOfInterest, inclusive));
+      return result;
+   }
    
    /**
      * A simple exception indicating a problem with the data connection.
