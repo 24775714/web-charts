@@ -42,7 +42,7 @@ function openCreateMultichartDialogue() {
    formHTML :
     '<div class="w2ui-page page-0">'
   + ' <div class="BigFont" style="text-align:center; margin-bottom: 15px">'
-  + '  What is the name of this plot?<br>'
+  + '  What is the name of this chart?<br>'
   + ' </div>'
   + ' <div class="BigFont w2ui-field">'
   + '  <label>Name:&nbsp;&nbsp;&nbsp;&nbsp;</label>'
@@ -54,9 +54,9 @@ function openCreateMultichartDialogue() {
   + ' <div class="BigFont" style="text-align:center; margin-bottom: 15px">'
   + '  The components of this chart are:<br>'
   + ' </div>'
-  + ' <div class="BigFont" style="text-align:center; margin-bottom: 15px">'
-  + '  ' + htmlListOfComponentCharts
-  + ' </div>'
+  + ' <div class="BigFont" style="text-align:center; margin-left: auto; margin-right: auto; margin-bottom: 15px; width: 80%; word-wrap: break-word">'
+  + ' <b>' + htmlListOfComponentCharts
+  + ' </b></div>'
   + '</div>'
   + '<div class="w2ui-buttons">'
   + ' <button class="btn" name="Create">Create</button>'
