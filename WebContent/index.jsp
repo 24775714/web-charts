@@ -39,6 +39,7 @@
   <link rel="stylesheet" type="text/css" href="css/index.css">
   
   <script type="text/javascript" src="js/Dialogues.js"></script>
+  <script type="text/javascript" src="js/Controls.js"></script>
   <script type="text/javascript" src="js/Queries.js"></script>
   <script type="text/javascript" src="js/Multichart.js"></script>
  </head>
@@ -69,7 +70,7 @@
     $('#SynchronizationRadioButtons').buttonset();
     
     // true when and only when the 'On Demand' radio button option is selected
-    var synchronizationIsOnDemand = true;
+    var synchronizationIsOnDemand = false;
     
     // update timescale for 'Continuous Update' mode
     var
@@ -220,9 +221,6 @@
      console.log('using minute update timescale');
      validateTimescale();
     }
-    
-    // initial radio button choice is 'Continuous Update'
-    selectContinuousUpdate();
     
     function DownloadOnDemandButtonClicked() {
      console.log('downloading data...');
@@ -464,11 +462,14 @@
          window.charts[chartName].refresh();
        }
        
-       // The name/recid pairs of all entries in the subscription grid.
+       // The name/recid pairs of all entries in the subscription grid
        var subscribedChartNames = {};
        
        // The number of charts still to download
        var numPendingDownloads = 0;
+       
+       // setTimeout lock for subscription grid overlay
+       var subscriptionChartGridLockTimeout;
        
        /*
         * Add a range of charts to the subscription grid.
@@ -494,11 +495,14 @@
           window.subscribedChartNames[id] = -recid;
           ++numPendingDownloads;
           if(!lockedSubscriptionGrid) {
-           subscribedCharts.lock(
+           window.subscriptionChartGridLockTimeout = setTimeout(
+            function() { subscribedCharts.lock(
              { spinner: true, 
                msg: 'Downloading Charts...',
                opacity : 0.6 });
-           subscribedCharts.refresh();
+            subscribedCharts.refresh();
+            }, 250
+           );
            lockedSubscriptionGrid = true;
           }
           getChartDataFromServer(id, initialDataDownoadCompleteCallback);
@@ -521,6 +525,7 @@
         subscriptionGrid.add(subscriptionRecord);
         --numPendingDownloads;
         if(numPendingDownloads == 0) {
+         clearTimeout(window.subscriptionChartGridLockTimeout);
          subscriptionGrid.unlock();
          subscriptionGrid.refresh();
          $('#SubscriptionsGridControlContainer').w2overlay({ 
@@ -932,6 +937,9 @@
      popup('Failed To Interact With Server', err.toString());
     }
    }
+   
+   // initial radio button choice is 'On Demand'
+   selectOnDemandSynchronization();
   </script>
   <script type="text/javascript">
    /*

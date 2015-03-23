@@ -46,7 +46,7 @@ function DygraphLinechart(graphName, containerID, multichart, title, xLabel, yLa
   rollPeriod: 1,
   showRoller: false,
   title: this.title + '<br>',
-  legend: 'always',
+  legend: 'onmouseover',
   labelsDivStyles: { 'textAlign': 'right' },
   showRangeSelector: true,
   logscale: false,
@@ -65,7 +65,9 @@ function DygraphLinechart(graphName, containerID, multichart, title, xLabel, yLa
   drawPoints: false,
   strokeWidth: 1,
   strokeBorderWidth: 0,
-  fillAlpha: 0.1
+  fillAlpha: 0.1,
+  hideOverlayOnMouseOut: true,
+  labelsSeparateLines: true
  };
  this.highlightEnabled = false;
  this.loaded = false;
@@ -200,6 +202,15 @@ DygraphLinechart.prototype.redraw = function() {
    'highlightSeriesBackgroundAlpha' : ref.options['highlightSeriesBackgroundAlpha']});
  }).button());
  
+ $('#' + this.containerID + 'DygraphButtons').append(
+  $('<div/>', {
+   id: this.containerID + 'legendOptions',
+   style: 'float:right; height:23px; width:200px; margin-right:7px' }));
+ $('#' + (this.containerID + 'legendOptions'))
+  .dropDownWithLabel('Legend:', 130, ['Always','Never','On Mouseover'],
+    this.toLegendMenuButtonText(this.options['legend']),
+    function(value) { ref.legendOptionsChanged(value); });
+ 
  if(ref.options['logscale'])
   $('#ToggleLogscaleDygraphButton').addClass('ButtonGlowSubtle');
  if(ref.options['fillGraph'])
@@ -221,6 +232,32 @@ DygraphLinechart.prototype.redraw = function() {
   this.loaded = true;
  }
  this.refresh();
+}
+
+/*
+ * Implementation detail.
+ */
+DygraphLinechart.prototype.legendOptionsChanged = function(value) {
+ var selection = '';
+ switch(value) {
+ case 'Always': selection = 'always'; break;
+ case 'Never': selection = 'never'; break;
+ case 'On Mouseover': selection = 'onmouseover'; break;
+ };
+ this.options['legend'] = selection;
+ if(this.loaded)
+  this.graph.updateOptions({'legend': selection});
+}
+
+/*
+ * Implementation detail.
+ */
+DygraphLinechart.prototype.toLegendMenuButtonText = function(legendOption) {
+ switch(legendOption) {
+ case 'always': return 'Always';
+ case 'never': return 'Never';
+ case 'onmouseover': return 'On Mouseover';
+ };
 }
 
 /*
