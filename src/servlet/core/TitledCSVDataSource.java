@@ -227,7 +227,7 @@ public final class TitledCSVDataSource extends AbstractDataSourceConnector {
       double
          result = Double.parseDouble(input);
       if(!Double.isFinite(result))
-         return null;
+         return 0.0;
       else return result;
    }
    
