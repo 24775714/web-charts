@@ -24,7 +24,7 @@ package servlet.data;
   * 
   * @author phillips
   */
-public final class TimestampedDatum {
+public final class TimestampedDatum implements Comparable<TimestampedDatum> {
    
    private final double
       time,
@@ -70,5 +70,10 @@ public final class TimestampedDatum {
      */
    public double getValue() {
       return this.value;
+   }
+
+   @Override
+   public int compareTo(final TimestampedDatum o) {
+      return Double.compare(this.time, o.time);
    }
 }
