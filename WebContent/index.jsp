@@ -890,7 +890,7 @@
    /*
     * Data structures, constants and references
     */
-   var servlet = 'http://localhost:8080/web-charts/ChartsBrowserServlet';
+   var servlet = 'http://localhost:8080/web-charts/DataBrowserServlet';
    var charts = {};
   </script>
   <script type="text/javascript">
