@@ -40,19 +40,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
-  * Servlet implementation class ChartsBrowserServlet
+  * Servlet implementation class DataBrowserServlet
   */
 @WebServlet(
    asyncSupported = true,
    description = "Browser for data charts",
-   urlPatterns = { "/ChartsBrowserServlet" }
+   urlPatterns = { "/DataBrowserServlet" }
    )
-public final class ChartsBrowserServlet extends HttpServlet {
+public final class DataBrowserServlet extends HttpServlet {
    
    private static final long serialVersionUID = 8026415575589209128L;
    
    private final static Logger
-      logger = LoggerFactory.getLogger(ChartsBrowserServlet.class);
+      logger = LoggerFactory.getLogger(DataBrowserServlet.class);
    
    private final DataSourceConnector
       dataSourceConnector;
@@ -61,13 +61,21 @@ public final class ChartsBrowserServlet extends HttpServlet {
       gson;
    
    /**
-     * Create a {@link ChartsBrowserServlet} object.
+     * Create a {@link DataBrowserServlet} object.
      * 
      * @see HttpServlet#HttpServlet()
      */
-   public ChartsBrowserServlet() {
-      this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(5, 1000L);
+   public DataBrowserServlet() {
+      logger.info("loading data browser servlet..");
+      // this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(5, 1000L);
+      try {
+         this.dataSourceConnector = new TitledCSVDataSource(
+            "/home/sysadm/git/CRISIS-Internal/MasterModel.csv", "tick");
+      } catch (IOException e) {
+         throw new IllegalStateException();
+      }
       this.gson = new GsonBuilder().create();
+      logger.info("data browser servlet loaded successfully.");
    }
    
    /**

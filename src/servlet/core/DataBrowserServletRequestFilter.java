@@ -47,13 +47,13 @@ import org.slf4j.LoggerFactory;
   * 
   * @author phillips
   */
-public final class ChartsBrowserServletRequestFilter implements Filter {
+public final class DataBrowserServletRequestFilter implements Filter {
    
    private Semaphore
       gate;
    
    private final static Logger
-      logger = LoggerFactory.getLogger(ChartsBrowserServletRequestFilter.class);
+      logger = LoggerFactory.getLogger(DataBrowserServletRequestFilter.class);
    
    /**
      * @param request
