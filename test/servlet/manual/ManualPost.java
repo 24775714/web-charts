@@ -18,28 +18,22 @@
   */
 package servlet.manual;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import servlet.core.GSONPostUtils;
+import servlet.core.GSONPostUtils.POSTException;
 import servlet.data.TimestampedDatum;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * @author phillips
@@ -68,14 +62,14 @@ public class ManualPost {
          params.add(new BasicNameValuePair("create_chart", "Second Manual Chart"));
          
          Map<String, String>
-            response = ManualPost.postNameValuePairs(
+            response = GSONPostUtils.POST(
                "http://localhost:8080/web-charts/receiver", params);
          
          for(final Entry<String, String> record : response.entrySet()) {
             System.out.println(record.getKey() + ": " + record.getValue());
          }
       }
-      catch(final Exception e) {
+      catch(final POSTException e) {
          System.out.println("fail");
       }
       
@@ -96,52 +90,15 @@ public class ManualPost {
          params.add(new BasicNameValuePair("upload_data", gson.toJson(allUploadRequests)));
          
          Map<String, String>
-            response = ManualPost.postNameValuePairs(
+            response = GSONPostUtils.POST(
                "http://localhost:8080/web-charts/receiver", params);
          
          for(final Entry<String, String> record : response.entrySet()) {
             System.out.println(record.getKey() + ": " + record.getValue());
          }
       }
-      catch(final Exception e) {
+      catch(final POSTException e) {
          System.out.println("fail");
       }
-   }
-   
-   static Map<String, String> postNameValuePairs(
-      final String url,
-      final List<NameValuePair> params
-      ) {
-      final CloseableHttpClient
-         httpclient = HttpClients.createDefault();
-      CloseableHttpResponse
-         response = null;
-      final Gson
-         gson = new GsonBuilder().create();
-      Map<String, String>
-         result = null;
-      try {
-         final HttpPost
-            httppost = new HttpPost(url);
-         httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-         response = httpclient.execute(httppost);
-         final String
-            json = EntityUtils.toString(response.getEntity());
-         result =  gson.fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
-      }
-      catch(final Exception e) {
-         logger.error("post failed: {}", e);
-      }
-      finally {
-         try {
-            httpclient.close();
-            if(response != null)
-               response.close();
-            logger.info("post success");
-         } catch (IOException e) {
-            logger.error("post succeeded, but could not close HTTP resources");
-         }
-      }
-      return result;
    }
 }

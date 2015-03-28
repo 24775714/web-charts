@@ -67,13 +67,7 @@ public final class DataBrowserServlet extends HttpServlet {
      */
    public DataBrowserServlet() {
       logger.info("loading data browser servlet..");
-      // this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(5, 1000L);
-      try {
-         this.dataSourceConnector = new TitledCSVDataSource(
-            "/home/sysadm/git/CRISIS-Internal/MasterModel.csv", "tick");
-      } catch (IOException e) {
-         throw new IllegalStateException();
-      }
+      this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(5, 1000L);
       this.gson = new GsonBuilder().create();
       logger.info("data browser servlet loaded successfully.");
    }

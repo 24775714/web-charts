@@ -31,7 +31,6 @@ import com.google.common.base.Preconditions;
 
 import servlet.core.AbstractDataSourceConnector;
 import servlet.core.DataSourceConnector;
-import servlet.core.DataSourceConnector.DataSourceException;
 
 /**
   * A simple implementation of the {@link LiveDataBuffer} interface. This implementation
