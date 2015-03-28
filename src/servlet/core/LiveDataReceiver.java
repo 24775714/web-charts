@@ -34,7 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import servlet.data.LiveDataBuffer;
 import servlet.data.TimestampedDatum;
+import servlet.data.TreeSetLiveDataBuffer;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -42,7 +44,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
-  * A servlet dedicated to processing live data requests.
+  * A servlet dedicated to processing live, incoming data requests.
   * 
   * @author phillips
   */

@@ -16,12 +16,12 @@
   * You should have received a copy of the GNU General Public License
   * along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
   */
-package servlet.core;
+package servlet.data;
 
 import java.util.List;
 
+import servlet.core.DataSourceConnector;
 import servlet.core.DataSourceConnector.DataSourceException;
-import servlet.data.TimestampedDatum;
 
 /**
   * A (non-servlet) interface for a live data buffer. Implementations of this interface
