@@ -25,24 +25,16 @@ import java.util.Map.Entry;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import servlet.core.GSONPostUtils;
 import servlet.core.GSONPostUtils.POSTException;
+import servlet.data.TimeseriesPOSTUtils;
 import servlet.data.TimestampedDatum;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
- * @author phillips
- *
- */
+  * @author phillips
+  */
 public class ManualPost {
-   private final static Logger
-      logger = LoggerFactory.getLogger(ManualPost.class);
-   
    static final class UploadDataRequest {
       String chartName;
       List<TimestampedDatum> packet = new ArrayList<TimestampedDatum>();
@@ -52,9 +44,6 @@ public class ManualPost {
     * @param args
     */
    public static void main(String[] args) {
-      final Gson
-         gson = new GsonBuilder().create();
-      
       try {
          List<NameValuePair>
             params = new ArrayList<NameValuePair>();
@@ -73,32 +62,27 @@ public class ManualPost {
          System.out.println("fail");
       }
       
-      try {
-         UploadDataRequest
-            first = new UploadDataRequest();
-         
-         first.chartName = "First Manual Chart";
-         for(int i = 0; i< 10; ++i)
-            first.packet.add(TimestampedDatum.create(i, i));
-         
-         final List<UploadDataRequest>
-            allUploadRequests = new ArrayList<ManualPost.UploadDataRequest>();
-         allUploadRequests.add(first);
-         
-         List<NameValuePair>
-            params = new ArrayList<NameValuePair>();
-         params.add(new BasicNameValuePair("upload_data", gson.toJson(allUploadRequests)));
-         
-         Map<String, String>
-            response = GSONPostUtils.POST(
-               "http://localhost:8080/web-charts/receiver", params);
-         
-         for(final Entry<String, String> record : response.entrySet()) {
-            System.out.println(record.getKey() + ": " + record.getValue());
+      {
+         boolean
+            result = false;
+         try {
+            final List<TimestampedDatum>
+               data = new ArrayList<TimestampedDatum>();
+            for(int i = 0; i< 10; ++i)
+               data.add(TimestampedDatum.create(i, i));
+            result = TimeseriesPOSTUtils.POST(
+               "http://localhost:8080/web-charts/receiver",
+               "First Manual Chart",
+               data
+               );
+            
          }
-      }
-      catch(final POSTException e) {
-         System.out.println("fail");
+         catch(final POSTException e) {
+            System.out.println("fail");
+         }
+         finally {
+            System.out.println(result ? "success" : "failure");
+         }
       }
    }
 }
