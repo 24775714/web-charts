@@ -153,7 +153,6 @@
    {'is_configured':''},
    function(response) {
     var isConfigured = response.configuration_state;
-    alert(isConfigured);
     if(isConfigured == true)
      setStateServletIsConfigured();
     else
