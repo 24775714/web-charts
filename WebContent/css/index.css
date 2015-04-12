@@ -225,3 +225,40 @@ html, body {
 .ui-menu-item {
     font: 65% "Trebuchet MS", sans-serif;
 }
+
+/** Containers with this class have vertically and horizontally centred contents: */
+.Centering {
+ display: -webkit-flexbox;
+ display: -ms-flexbox;
+ display: -webkit-flex;
+ display: flex;
+ -webkit-flex-align: center;
+ -ms-flex-align: center;
+ -webkit-align-items: center;
+ align-items: center;
+ justify-content: center;
+}
+
+/** Reversed animation direction: */
+.spin-reverse {
+ -moz-animation-direction: reverse;
+ -o-animation-direction: reverse;
+ -webkit-animation-direction: reverse;
+ animation-direction: reverse;
+}
+
+/** Fast animation (2s cycle): */
+.spin-fast {
+ -moz-animation-duration: 2s;
+ -o-animation-duration: 2s;
+ -webkit-animation-duration: 2s;
+ animation-duration: 2s;
+}
+
+/** Slow animation (5s cycle): */
+.spin-slow {
+ -moz-animation-duration: 5s;
+ -o-animation-duration: 5s;
+ -webkit-animation-duration: 5s;
+ animation-duration: 5s;
+}
