@@ -34,9 +34,10 @@
   <link rel="stylesheet" type="text/css" href="external/font-awesome-4.3.0/css/font-awesome.css">
   
   <link rel="stylesheet" type="text/css" href="css/index.css">
+  <link rel="stylesheet" type="text/css" href="admin/admin.css">
  </head>
 <body>
- <div id="Site" style="min-height:500px; overflow: scroll">
+ <div id="Site" style="min-height:500px; min-width:680px; overflow: scroll">
   <div id="Limiter" style="height:500px; width:100%; float:left">
    <div id="sidebar" style="height:100%; width:180px; float:left;"></div>
    
@@ -73,9 +74,22 @@
     });
    });
    </script>
+   <div id="FormContainer" style="width:calc(100% - 185px); height:calc(100% - 45px);
+        background-color:white; margin-left:5px; margin-top:5px; float:left;">
+   </div>
+   <div id="SubmitButtonContainer" style="width:750px; height:40px; 
+        margin-left:0; margin-top:0; float:left;">
+    <button type="submit" class="not-selectable submitButton" style="float:right; margin-top:5px">
+     <i class="fa fa-play"></i> Start Server</button>
+   </div>
   </div>
   <div style="float:left; height:calc(100% - 500px); width: 179px; background-color: #eee;
        border-right: 1px solid silver;"></div>
  </div>
+ <script type="text/javascript">
+  $('#FormContainer').load('admin/live-receiver-config.html');
+  
+  $('#StartServerButton').button({icons: { primary: "fa-play" }});
+ </script>
 </body>
 </html>
