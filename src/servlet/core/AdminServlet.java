@@ -19,6 +19,9 @@
 package servlet.core;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletException;
@@ -51,6 +54,10 @@ public final class AdminServlet extends HttpServlet {
    private final Gson
       gson;
    
+   private final boolean
+      isConfigured;
+      
+   
    /**
      * Create a {@link AdminServlet} object.
      * 
@@ -59,6 +66,7 @@ public final class AdminServlet extends HttpServlet {
    public AdminServlet() {
       logger.info("loading admin servlet..");
       this.gson = new GsonBuilder().create();
+      this.isConfigured = false;
       logger.info("admin servlet loaded successfully.");
    }
    
@@ -133,6 +141,30 @@ public final class AdminServlet extends HttpServlet {
       response.setContentType("application/json");
       response.setCharacterEncoding("UTF-8");
       
-      // TODO
+      final Map<String, String[]>
+         parameters = request.getParameterMap();
+      final Map<String, String>
+         responseMap = new HashMap<String, String>();
+      
+      if(parameters.isEmpty() || parameters.size() != 1) {
+         logger.error("request is malformed.");
+         return;
+      }
+      
+      final Entry<String, String[]>
+         record = parameters.entrySet().iterator().next();
+      final String
+         name = record.getKey();
+      final String[]
+         values = record.getValue();
+      
+      if(name.equals("is_configured")) {
+         final String
+            result = Boolean.toString(this.isConfigured);
+         logger.info("ask: is_configured, response: " + result);
+         responseMap.put("configuration_state", result);
+      }
+      
+      response.getWriter().write(this.gson.toJson(responseMap));
    }
 }
