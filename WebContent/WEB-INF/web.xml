@@ -35,6 +35,12 @@
    <load-on-startup>2</load-on-startup>
   </servlet>
   
+  <servlet>
+   <servlet-name>admin</servlet-name>
+   <servlet-class>servlet.core.AdminServlet</servlet-class>
+   <load-on-startup>3</load-on-startup>
+  </servlet>
+  
   <servlet-mapping>
    <servlet-name>web-charts</servlet-name>
    <url-pattern>/browse</url-pattern>
@@ -43,6 +49,11 @@
   <servlet-mapping>
    <servlet-name>live-data-receiver</servlet-name>
    <url-pattern>/receiver</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+   <servlet-name>admin</servlet-name>
+   <url-pattern>/admin</url-pattern>
   </servlet-mapping>
   
   <listener>
