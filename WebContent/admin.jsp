@@ -21,7 +21,7 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Browse Charts</title>
+  <title>Control Panel</title>
   
   <script type="text/javascript" src="external/jquery-1.11.2/jquery-1.11.2.min.js"></script>
   
@@ -87,9 +87,88 @@
        border-right: 1px solid silver;"></div>
  </div>
  <script type="text/javascript">
+  var servlet;
+  {
+   var
+    href = window.location.href;
+   window.servlet = href.substr(0, href.lastIndexOf('/')) + '/admin';
+   //delete href;
+  }
+ </script>
+ 
+ <script type="text/javascript">
   $('#FormContainer').load('admin/live-receiver-config.html');
   
   $('#StartServerButton').button({icons: { primary: "fa-play" }});
+ </script>
+ 
+ <script type="text/javascript">
+ /**
+   * Lock the site container with an error message.
+   */
+ function lockWithErrorMessage(message) {
+  w2utils.lock($('#Site'), { spinner: false, msg: message, opacity : 0.6 });
+ }
+ 
+ /**
+   * Lock/unlock the site container with a message.
+   */
+ function tempLockWithMessage(message) {
+  w2utils.lock($('#Site'), { spinner: true, msg: message, opacity : 0.6 });
+ }
+ function unlockSiteContainer() {
+  w2utils.unlock($('#Site'));
+ }
+ 
+ function POST(data, onSuccess, onError) {
+  $.ajax({
+   type: 'POST',
+   url: servlet,
+   data: data,
+   traditional: true,
+   async: false,
+   success: function(response) { onSuccess(response); },
+   error: function(x,e){ onError(e); } 
+  });
+ }
+ 
+ function setStateServletIsUnconfigured() {
+  console.log('server is unconfigured.');
+  unlockSiteContainer();
+ }
+ 
+ function setStateServletIsConfigured() {
+  console.log('server is configured.');
+  lockWithErrorMessage('Server is running.');
+ }
+ 
+ /**
+   * Query the servlet with is_configured. The result of this query will be
+   * true or false. In the event of an error, the site container will lock.
+   * If this POST returns false, the 'start servlet' button will be disabled.
+   * Otherwise, the 'start servlet' button will be enabled.
+   */
+ function queryIsServletConfigured() {
+  POST(
+   {'is_configured':''},
+   function(response) {
+    var isConfigured = response.configuration_state;
+    alert(isConfigured);
+    if(isConfigured == true)
+     setStateServletIsConfigured();
+    else
+     setStateServletIsUnconfigured();
+   },
+   function() { lockWithErrorMessage("servlet failed to respond properly"); }
+  );
+ }
+ </script>
+ 
+ <!-- Initial loadup -->
+ <script type="text/javascript">
+ tempLockWithMessage('&nbsp;&nbsp;Loading...');
+  
+ queryIsServletConfigured();
  </script>
 </body>
 </html>
