@@ -54,3 +54,17 @@
 .w2ui-field > label {
  margin-top:12px;
 }
+
+.DescriptionBox {
+ font-family: sans-serif;
+ font-style: normal;
+ font-size: 14px;
+ font: "Arial Narrow", Arial, sans-serif;
+ color: #484848;
+ letter-spacing: 0.5px;
+ padding: 10px;
+ line-height: 20px;
+ -webkit-font-smoothing: antialiased;
+}
+ 
+}
