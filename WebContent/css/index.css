@@ -239,6 +239,15 @@ html, body {
  justify-content: center;
 }
 
+/** Containers for which contents are vertically centred: */
+.VerticalCentering {
+ display: -webkit-flexbox;
+ display: -ms-flexbox;
+ display: -webkit-flex;
+ display: flex;
+ align-items: center;
+}
+
 /** Reversed animation direction: */
 .spin-reverse {
  -moz-animation-direction: reverse;
@@ -261,4 +270,16 @@ html, body {
  -o-animation-duration: 5s;
  -webkit-animation-duration: 5s;
  animation-duration: 5s;
+}
+
+/** Element with no selection highlighting: */
+.not-selectable {
+ -webkit-touch-callout: none;
+ -webkit-user-select: none;
+ -khtml-user-select: none;
+ -moz-user-select: none;
+ -ms-user-select: none;
+ user-select: none;
+ -o-user-select: none; 
+ outline: none;
 }
