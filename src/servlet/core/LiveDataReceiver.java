@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -66,6 +67,9 @@ public final class LiveDataReceiver extends HttpServlet {
    private final LiveDataBuffer
       dataBuffer;
    
+   private AtomicBoolean
+      isInitialized;
+   
    /**
      * Create a {@link LiveDataReceiver} object.<br><br>
      * 
@@ -78,14 +82,24 @@ public final class LiveDataReceiver extends HttpServlet {
       logger.info("live data servlet loaded successfully.");
    }
    
+   @Override
+   public void init() throws ServletException {
+      super.init();
+      this.isInitialized =
+         (AtomicBoolean) super.getServletContext().getAttribute("live-data-receiver-initialized");
+      // TODO
+      this.isInitialized.set(true);
+   }
+   
    /**
      * Process a GET HTTP request.
      * 
      * In the current implementation all requests are handled via POST.
      */
+   @Override
    protected void doGet(
-      final HttpServletRequest request, 
-      HttpServletResponse response
+      final HttpServletRequest request,
+      final HttpServletResponse response
       ) throws ServletException, IOException {
       response.setContentType("application/json");
       response.setCharacterEncoding("UTF-8");
@@ -111,7 +125,10 @@ public final class LiveDataReceiver extends HttpServlet {
      *        The map to which responses are to be inserted. This argument must be
      *        non-<code>null</code>.
      */
-   private void processCreateChartRequest(final String chartName, Map<String, String> responseMap) {
+   private void processCreateChartRequest(
+      final String chartName,
+      final Map<String, String> responseMap
+      ) {
       boolean
          result = false;
       if(chartName == null || chartName.isEmpty())
@@ -138,12 +155,12 @@ public final class LiveDataReceiver extends HttpServlet {
      *        objects. If this argument is empty or <code>null</code>, or is a malformed
      *        JSON string, then this method prints an error the logger and otherwise returns
      *        and does nothing.<br><br>
-     *        
+     * 
      *        For each {@link UploadDataRequest} parsed from the JSON, this method will
      *        insert a key <code>"upload_data: [chart name]"</code> (where
      *        <code>[chart name]</code> is the name of the chart) into the response map if
      *        the chart name is non-<code>null</code> and non-empty.<br><br>
-     *        
+     * 
      *        The value of this key is either:
      *        <ul>
      *         <li> <code>success</code> if the chart data was uploaded successfully, or
@@ -154,7 +171,10 @@ public final class LiveDataReceiver extends HttpServlet {
      *        The map to which responses are to be inserted. This argument must be
      *        non-<code>null</code>.
      */
-   private void processUploadDataRequest(final String json, Map<String, String> responseMap) {
+   private void processUploadDataRequest(
+      final String json,
+      final Map<String, String> responseMap
+      ) {
       if(json == null || json.isEmpty()) {
          logger.error("upload_data: JSON string is empty.");
          return;
@@ -197,7 +217,7 @@ public final class LiveDataReceiver extends HttpServlet {
    }
    
    /**
-     * The POST response generator. This Servlet responds as follows:
+     * The POST response generator. This servlet responds as follows:
      * 
      * <ul>
      *    <li> For each parameter with value <code>N</code> keyed by <code>create_chart</code>
@@ -210,37 +230,38 @@ public final class LiveDataReceiver extends HttpServlet {
      *         depending of the outcome of the <code>create_chart</code> request (unless
      *         <code>N</code> is the empty {@link String}, in which case there is no response).
      *         <br><br>
-     *         
+     * 
      *    <li> For each parameter with value <code>D</code> keyed by <code>upload_data</code>
      *         the response of the servlet is as follows:<br><br>
-     *         
+     * 
      *         If <code>D</code> is not a JSON {@link String} representation of a {@link List} of
      *         classes containing exactly two fields:
      *         <ul>
      *          <li> {@link String} <code>chartName</code>, and
      *          <li> </code>List&lt;TimestampedDatum&gt;</code> packet,
      *         </ul>
-     *         then there is no response.<br><br> 
-     *         
+     *         then there is no response.<br><br>
+     * 
      *         Otherwise, the response of this servlet is a name-value pair of the form:<br><br>
      *         <center>
      *          <code>{ key: "upload_data: X", value: V }</code>
      *         </center><br>
-     *         where <code>X</code> is the value of <code>D.chartName</code> (above) and 
+     *         where <code>X</code> is the value of <code>D.chartName</code> (above) and
      *         <code>V</code> is a {@link String} with value <code>"success"</code> or
      *         <code>"failure"</code> depending of the outcome of the <code>upload_data</code>
      *         request.
      *  </ul>
      * </ul>
      * 
-     * The servlet.core response is UTF-8 JSON.<br><br>
+     * The servlet response is UTF-8 JSON.<br><br>
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
      */
+   @Override
    protected void doPost(
       final HttpServletRequest request,
-      HttpServletResponse response
+      final HttpServletResponse response
       ) throws ServletException, IOException {
       response.setContentType("application/json");
       response.setCharacterEncoding("UTF-8");
@@ -250,6 +271,10 @@ public final class LiveDataReceiver extends HttpServlet {
       
       final Map<String, String>
          responseMap = new HashMap<String, String>();
+      
+      if(!this.isInitialized.get())
+         return;
+      
       for(final Entry<String, String[]> record : parameters.entrySet()) {
          final String
             name = record.getKey();
@@ -263,7 +288,7 @@ public final class LiveDataReceiver extends HttpServlet {
             break;
          default:
             logger.error("unknown request: {}", name);
-         } 
+         }
       }
       response.getWriter().write(this.gson.toJson(responseMap));
    }
