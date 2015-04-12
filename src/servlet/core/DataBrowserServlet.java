@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -60,16 +61,27 @@ public final class DataBrowserServlet extends HttpServlet {
    private final Gson
       gson;
    
+   private AtomicBoolean
+      isInitialized;
+   
    /**
      * Create a {@link DataBrowserServlet} object.
      * 
      * @see HttpServlet#HttpServlet()
      */
    public DataBrowserServlet() {
+      super();
       logger.info("loading data browser servlet..");
       this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(5, 1000L);
       this.gson = new GsonBuilder().create();
       logger.info("data browser servlet loaded successfully.");
+   }
+   
+   @Override
+   public void init() throws ServletException {
+      super.init();
+      this.isInitialized =
+         (AtomicBoolean) super.getServletContext().getAttribute("data-browser-initialized");
    }
    
    /**
@@ -77,9 +89,10 @@ public final class DataBrowserServlet extends HttpServlet {
      * 
      * In the current implementation all requests are handled via POST.
      */
+   @Override
    protected void doGet(
-      final HttpServletRequest request, 
-      HttpServletResponse response
+      final HttpServletRequest request,
+      final HttpServletResponse response
       ) throws ServletException, IOException {
       response.setContentType("application/json");
       response.setCharacterEncoding("UTF-8");
@@ -92,7 +105,7 @@ public final class DataBrowserServlet extends HttpServlet {
      *        The map to which responses are to be inserted. This argument must be
      *        non-<code>null</code>.
      */
-   private void listKnownCharts(Map<String, String> responseMap) {
+   private void listKnownCharts(final Map<String, String> responseMap) {
       try {
          responseMap.put("known_charts", this.gson.toJson(
             this.dataSourceConnector.getKnownCharts()));
@@ -108,7 +121,7 @@ public final class DataBrowserServlet extends HttpServlet {
      *        The map to which responses are to be inserted. This argument must be
      *        non-<code>null</code>.
      */
-   private void processGetDataNameRequest(Map<String, String> responseMap) {
+   private void processGetDataNameRequest(final Map<String, String> responseMap) {
       responseMap.put("data_name", this.dataSourceConnector.getDataSourceName());
    }
    
@@ -146,50 +159,74 @@ public final class DataBrowserServlet extends HttpServlet {
    }
    
    /**
-     * The POST response generator. This Servlet responds as follows:
+     * The POST response generator. This servlet responds as follows:
      * 
      * <ul>
+     *    <li> For requests containing exactly one parameter <code>is_ready</code>
+     *         with no value, the response is one string <code>true</code> or
+     *         <code>false</code> keyed by <code>is_ready</code>.
+     * 
+     *    <li> For any other type of request, if this servlet has not been initialised
+     *         then the response is an empty string keyed by <code>not_ready</code>.
+     * 
      *    <li> For parameters named <code>list_known_charts</code> with no value
      *         the response is an ordered {@link List} of strings in JSON format.
      *         This list may or may not be empty, keyed by <code>known-charts</code>.
-     *         
+     * 
      *    <li> For parameters named <code>get_data_name</code> with no value
      *         the response is a single {@link String} keyed by <code>data_name</code>.
      *         This {@link String} is an identifying name for the data stream processed
      *         by this servlet.core.
-     *         
-     *    <li> For parameters named <code>download_data</code> the expected format 
+     * 
+     *    <li> For parameters named <code>download_data</code> the expected format
      *         of the value array is <code>X</code> followed by <code>T</code>.
      *         <code>X</code> is the name of a data chart known to this servlet.core.
      *         <code>T</code> is a data-time string parseable as a double.
      *         The request (<code>download-data</code>, [<code>X</code>, <code>T</code>])
      *         is a request for all data belonging to chart <code>X</code> strictly
      *         after (and not including) time <code>T</code>.<br><br>
-     *         
-     *         The response of the servlet.core is to insert a key <code>M</code> with
-     *         name <code>X</code>. The value of this key is a JSON formatted 
+     * 
+     *         The response of the servlet is to insert a key <code>M</code> with
+     *         name <code>X</code>. The value of this key is a JSON formatted
      *         array of double pairs <code>{ t1, v1 }, { t2, v2 }</code> with
      *         <code>t > T</code> for all <code>t1, t2 ...</code>.
      *  </ul>
      * </ul>
      * 
-     * The servlet.core response is UTF-8 JSON.<br><br>
+     * The servlet response is UTF-8 JSON.<br><br>
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
      */
+   @Override
    protected void doPost(
       final HttpServletRequest request,
-      HttpServletResponse response
+      final HttpServletResponse response
       ) throws ServletException, IOException {
       response.setContentType("application/json");
       response.setCharacterEncoding("UTF-8");
       
       final Map<String, String[]>
          parameters = request.getParameterMap();
-      
       final Map<String, String>
          responseMap = new HashMap<String, String>();
+      
+      if(parameters.size() == 1) {
+         final Entry<String, String[]>
+            record = parameters.entrySet().iterator().next();
+         final String
+            name = record.getKey();
+         if(name.equals("is_ready") && record.getValue().length == 0) {
+            responseMap.put("is_ready", Boolean.toString(this.isInitialized.get()));
+            response.getWriter().write(this.gson.toJson(responseMap));
+         }
+      }
+      
+      if(!this.isInitialized.get()) {
+         responseMap.put("not_ready", "");
+         response.getWriter().write(this.gson.toJson(responseMap));
+      }
+      
       for(final Entry<String, String[]> record : parameters.entrySet()) {
          final String
             name = record.getKey();
@@ -206,8 +243,9 @@ public final class DataBrowserServlet extends HttpServlet {
             break;
          default:
             logger.error("unknown request: {}", name);
-         } 
+         }
       }
+      
       response.getWriter().write(this.gson.toJson(responseMap));
    }
 }
