@@ -45,4 +45,7 @@
    <url-pattern>/receiver</url-pattern>
   </servlet-mapping>
   
+  <listener>
+   <listener-class>servlet.core.ContextStartupListener</listener-class>
+  </listener>
 </web-app>
