@@ -82,7 +82,8 @@
    </div>
    <div id="SubmitButtonContainer" style="width:750px; height:40px; 
         margin-left:0; margin-top:0; float:left;">
-    <button type="submit" class="not-selectable submitButton" style="float:right; margin-top:5px">
+    <button id="StartServerButton" type="submit" class="not-selectable submitButton"
+        style="float:right; margin-top:5px">
      <i class="fa fa-play"></i> Start Server</button>
    </div>
   </div>
@@ -127,7 +128,12 @@
   }
  }
  
- $('#StartServerButton').button({icons: { primary: "fa-play" }});
+ /**
+   * Respond to a #StartServerButton click event:
+   */
+ function handleStartServerButtonClick() {
+  alert(JSON.stringify(getConfigurationJSON()));
+ }
  </script>
  
  <script type="text/javascript">
@@ -196,6 +202,8 @@
   tempLockWithMessage('&nbsp;&nbsp;Loading...');
    
   queryIsServletConfigured();
+  
+  $('#StartServerButton').click(handleStartServerButtonClick);
  </script>
  
  <!--
@@ -204,13 +212,19 @@
                  on the current content of $('#DisplayPane'). Immediately after calling this
                  method, the HTML and DOM content of $('#DisplayPane') will be emptied.
    getOperationmode():
-                 get a string describing the current content of $('#DisplayPane'). 
+                 get a string describing the current content of $('#DisplayPane').
+   getConfigurationJSON():
+                 get a JSON string describing the configuration settings specified by the user.
  -->
  <script type="text/javascript">
   function unloadPane() { }
   
   function getOperationMode() {
    return 'none';
+  }
+  
+  function getConfigurationJSON() {
+   return {};
   }
  </script>
 </body>
