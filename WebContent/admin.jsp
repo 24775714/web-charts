@@ -66,15 +66,18 @@
       expanded: true,
       group: true,
       nodes: [
-       { id: 'LiveReveiver',  text: 'Live Receiver',   icon: 'fa fa-wifi' },
+       { id: 'LiveReceiver',  text: 'Live Receiver',   icon: 'fa fa-wifi' },
        { id: 'CSVFileParser', text: 'CSV File Parser', icon: 'fa fa-file-text-o' },
        { id: 'RandomData',    text: 'Random Data',     icon: 'fa fa-bar-chart-o' }
       ]}
-     ]
+     ],
+     onClick: function (event) {
+      loadAdminPaneWith(event.target);
+     }
     });
    });
    </script>
-   <div id="FormContainer" style="width:calc(100% - 185px); height:calc(100% - 45px);
+   <div id="DisplayPane" style="width:calc(100% - 185px); height:calc(100% - 45px);
         background-color:white; margin-left:5px; margin-top:5px; float:left;">
    </div>
    <div id="SubmitButtonContainer" style="width:750px; height:40px; 
@@ -97,9 +100,34 @@
  </script>
  
  <script type="text/javascript">
-  $('#FormContainer').load('admin/live-receiver-config.html');
-  
-  $('#StartServerButton').button({icons: { primary: "fa-play" }});
+ function loadAdminPaneWith(type) {
+  var currentPane = getOperationMode();
+  switch(type) {
+  case 'LiveReceiver':
+   if(currentPane != 'live') {
+    unloadPane();
+    $('#DisplayPane').empty();
+    $('#DisplayPane').load('admin/live-receiver-config.html');
+   }
+   break;
+  case 'CSVFileParser':
+   if(currentPane != 'csv') {
+    unloadPane();
+    $('#DisplayPane').empty();
+    $('#DisplayPane').load('admin/csv-reader-config.html');
+   }
+   break;
+  case 'RandomData':
+   if(currentPane != 'random') {
+    unloadPane();
+    $('#DisplayPane').empty();
+    $('#DisplayPane').load('admin/random-data-config.html');
+   }
+   break;
+  }
+ }
+ 
+ $('#StartServerButton').button({icons: { primary: "fa-play" }});
  </script>
  
  <script type="text/javascript">
@@ -165,9 +193,25 @@
  
  <!-- Initial loadup -->
  <script type="text/javascript">
- tempLockWithMessage('&nbsp;&nbsp;Loading...');
+  tempLockWithMessage('&nbsp;&nbsp;Loading...');
+   
+  queryIsServletConfigured();
+ </script>
+ 
+ <!--
+  The following methods must be overridden by any content injected into $('#DisplayPane'):
+   unloadPane(): this method is called once when any unloading operations should be performed
+                 on the current content of $('#DisplayPane'). Immediately after calling this
+                 method, the HTML and DOM content of $('#DisplayPane') will be emptied.
+   getOperationmode():
+                 get a string describing the current content of $('#DisplayPane'). 
+ -->
+ <script type="text/javascript">
+  function unloadPane() { }
   
- queryIsServletConfigured();
+  function getOperationMode() {
+   return 'none';
+  }
  </script>
 </body>
 </html>

@@ -59,7 +59,7 @@
 <script type="text/javascript">
  $(function () {
   $('#Form').w2form({ 
-   name  : 'LiveReceiverConfigurationForm',
+   name  : 'RandomDataConfigurationForm',
    url   : 'server/post',
    fields: [
     { field: 'ApplicationName', type: 'text' },
@@ -71,6 +71,10 @@
    ]
   });
  });
+ 
+ function unloadPane() {
+  w2ui['RandomDataConfigurationForm'].destroy();
+ }
  
  function getOperationMode() {
   return 'random';

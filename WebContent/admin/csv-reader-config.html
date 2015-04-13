@@ -46,7 +46,7 @@
 <script type="text/javascript">
  $(function () {
   $('#Form').w2form({ 
-   name  : 'LiveReceiverConfigurationForm',
+   name  : 'CSVFileReaderConfigurationForm',
    url   : 'server/post',
    fields: [
     { field: 'ApplicationName', type: 'text' },
@@ -54,6 +54,10 @@
    ]
   });
  });
+ 
+ function unloadPane() {
+  w2ui['CSVFileReaderConfigurationForm'].destroy();
+ }
  
  function getOperationMode() {
   return 'csv';
