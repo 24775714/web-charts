@@ -16,12 +16,24 @@
  You should have received a copy of the GNU General Public License
  along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<div id="form" style="width: 750px;">
- <div class="w2ui-page page-0">
-  <div class="w2ui-field">
-   <label class="VerticalCentering">Application Name:</label>
-   <div>
-    <input name="ApplicationName" type="text" maxlength="200" size="60"/>
+<div id="FormContainer" style="width: 750px;">
+ <div id="DescriptionBox" class="DescriptionBox Centering" style="margin-top:20px;">
+ </div>
+ <script type="text/javascript">
+  $('#DescriptionBox').html(
+   'Configure the server to receive data from the web. Applications sending data to the web-charts'
+ + ' servlet will be charted continuously.<br/><br/>'
+ + 'The server will be configured to receive asynchronous data at: '
+ + servlet.substr(0, servlet.lastIndexOf('/')) + '/LiveDataReceiver'
+  );
+ </script>
+ <div id="Form" style="width: 100%; margin-top: 15px">
+  <div class="w2ui-page page-0">
+   <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
+    <label class="VerticalCentering">Application Name:</label>
+    <div>
+     <input name="ApplicationName" type="text" maxlength="200" size="60"/>
+    </div>
    </div>
   </div>
  </div>
@@ -29,8 +41,8 @@
 
 <script type="text/javascript">
  $(function () {
-  $('#form').w2form({ 
-   name  : 'form',
+  $('#Form').w2form({ 
+   name  : 'LiveReceiverConfigurationForm',
    url   : 'server/post',
    fields: [
     { field: 'ApplicationName', type: 'Application Name:' }
