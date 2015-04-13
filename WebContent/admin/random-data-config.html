@@ -79,4 +79,13 @@
  function getOperationMode() {
   return 'random';
  }
+ 
+ function getConfigurationJSON() {
+  return {
+   applicationName: $('#ApplicationName').val(),
+   dataType: $('#RandomDataType').val(),
+   numberOfTimeseries: $('#NumberOfTimeseries').val(),
+   NumberOfDataPoints: $('#NumberOfDataPoints').val()
+  };
+ }
 </script>

@@ -50,7 +50,7 @@
    url   : 'server/post',
    fields: [
     { field: 'ApplicationName', type: 'text' },
-    { field: 'CSVFileSource', type: 'file', options: { max: 1, silent: false }, required: true }
+    { field: 'CSVFileSource', type: 'file', options: { max: 1, silent: false } }
    ]
   });
  });
@@ -61,5 +61,12 @@
  
  function getOperationMode() {
   return 'csv';
+ }
+ 
+ function getConfigurationJSON() {
+  return {
+   applicationName: $('#ApplicationName').val(),
+   fileName: $('#CSVFileSource').data('selected')
+  }
  }
 </script>
