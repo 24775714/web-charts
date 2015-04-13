@@ -1,0 +1,61 @@
+<!--
+ This file is part of web-charts, an interactive web charts program.
+ 
+ Copyright (C) 2015 John Kieran Phillips
+ 
+ web-charts is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ web-charts is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with web-charts.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<div id="FormContainer" style="width: 750px;">
+ <div id="DescriptionBox" class="DescriptionBox Centering" style="margin-top:20px;">
+ </div>
+ <script type="text/javascript">
+  $('#DescriptionBox').html(
+   'Configure the server to parse data from a CSV file. Specify a name for the charting'
+ + ' session, and the location of the CSV data file below.'
+  );
+ </script>
+ <div id="Form" style="width: 100%; margin-top: 15px">
+  <div class="w2ui-page page-0">
+   <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
+    <label class="VerticalCentering">Application Name:</label>
+    <div>
+     <input name="ApplicationName" type="text" maxlength="200" size="60"/>
+    </div>
+   </div>
+   <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
+    <label class="VerticalCentering">CSV File Source:</label>
+    <div>
+     <input name="CSVFileSource" type="text" maxlength="200" size="60"/>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<script type="text/javascript">
+ $(function () {
+  $('#Form').w2form({ 
+   name  : 'LiveReceiverConfigurationForm',
+   url   : 'server/post',
+   fields: [
+    { field: 'ApplicationName', type: 'text' },
+    { field: 'CSVFileSource', type: 'file', options: { max: 1, silent: false }, required: true }
+   ]
+  });
+ });
+ 
+ function getOperationMode() {
+  return 'csv';
+ }
+</script>
