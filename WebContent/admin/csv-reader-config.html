@@ -37,7 +37,13 @@
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">CSV File Source:</label>
     <div>
-     <input id="CSVFileSource "name="CSVFileSource" type="text" maxlength="200" size="60"/>
+     <input id="CSVFileSource" name="CSVFileSource" type="text" maxlength="200" size="60"/>
+    </div>
+   </div>
+   <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
+    <label class="VerticalCentering">Name of Time (t) Column:</label>
+    <div>
+     <input id="NameOfTimeColumn" name="NameOfTimeColumn" type="text" maxlength="200" size="60"/>
     </div>
    </div>
   </div>
@@ -51,7 +57,8 @@
    url   : 'server/post',
    fields: [
     { field: 'CSVApplicationName', type: 'text' },
-    { field: 'CSVFileSource', type: 'text', required: true }
+    { field: 'CSVFileSource', type: 'text', required: true },
+    { field: 'NameOfTimeColumn', type: 'text', required: true }
    ]
   });
  });
@@ -65,13 +72,20 @@
  }
  
  function validateSettings() {
-  var appName = $('#CSVApplicationName').val();
+  var
+   appName = $('#CSVApplicationName').val(),
+   timeColumnName = $('#NameOfTimeColumn').val();
   validationErrors = w2ui['CSVFileReaderConfigurationForm'].validate(true);
+  var failed = false
   if(appName.trim().length == 0) {
    $('#CSVApplicationName').w2tag('Application name must not be empty');
-   return false;
+   failed = true;
   }
-  if(validationErrors.length != 0)
+  if(appName.trim().length == 0) {
+   $('#NameOfTimeColumn').w2tag('Time column name must not be empty');
+   failed = true;
+  }
+  if(validationErrors.length != 0 || failed)
    return false;
   return true;
  }
@@ -79,7 +93,8 @@
  function getConfigurationParameterMap() {
   return {
    applicationName: $('#CSVApplicationName').val(),
-   fileName: $('#CSVFileSource').data('selected')
+   fileName: $('#CSVFileSource').val(),
+   nameOfTimeColumn: $('#NameOfTimeColumn').val()
   }
  }
 </script>
