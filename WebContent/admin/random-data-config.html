@@ -31,25 +31,28 @@
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">Application Name:</label>
     <div>
-     <input name="ApplicationName" type="text" maxlength="200" size="60"/>
+     <input id="RandomDataApplicationName" name="RandomDataApplicationName"
+            type="text" maxlength="200" size="60"/>
     </div>
    </div>
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">Data Type:</label>
     <div>
-     <input name="RandomDataType" type="text"/>
+     <input id="RandomDataType" name="RandomDataType" type="text"/>
     </div>
    </div>
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">Number of Timeseries:</label>
     <div>
-     <input name="NumberOfTimeseries" type="text" maxlength="200" size="30"/>
+     <input id="NumberOfTimeseries" name="NumberOfTimeseries"
+            type="text" maxlength="200" size="30"/>
     </div>
    </div>
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">Number of Points:</label>
     <div>
-     <input name="NumberOfDataPoints" type="text" maxlength="200" size="30"/>
+     <input id="NumberOfDataPoints" name="NumberOfDataPoints"
+            type="text" maxlength="200" size="30"/>
     </div>
    </div>
   </div>
@@ -62,12 +65,12 @@
    name  : 'RandomDataConfigurationForm',
    url   : 'server/post',
    fields: [
-    { field: 'ApplicationName', type: 'text' },
-    { field: 'RandomDataType', type: 'list',
+    { field: 'RandomDataApplicationName', type: 'text' },
+    { field: 'RandomDataType', type: 'list', required: true,
      options: { items: ['Ornstein-Uhlenbeck', 'Linear'] }
     },
-    { field: 'NumberOfTimeseries', type: 'int', options: { min: 1 } },
-    { field: 'NumberOfDataPoints', type: 'int', options: { min: 1 } }
+    { field: 'NumberOfTimeseries', type: 'int', options: { min: 1 }, required: true },
+    { field: 'NumberOfDataPoints', type: 'int', options: { min: 1 }, required: true }
    ]
   });
  });
@@ -80,9 +83,21 @@
   return 'random';
  }
  
+ function validateSettings() {
+  var appName = $('#RandomDataApplicationName').val();
+  validationErrors = w2ui['RandomDataConfigurationForm'].validate(true);
+  if(appName.trim().length == 0) {
+   $('#RandomDataApplicationName').w2tag('Application name must not be empty');
+   return false;
+  }
+  if(validationErrors.length != 0)
+   return false;
+  return true;
+ }
+ 
  function getConfigurationJSON() {
   return {
-   applicationName: $('#ApplicationName').val(),
+   applicationName: $('#RandomDataApplicationName').val().trim(),
    dataType: $('#RandomDataType').val(),
    numberOfTimeseries: $('#NumberOfTimeseries').val(),
    NumberOfDataPoints: $('#NumberOfDataPoints').val()
