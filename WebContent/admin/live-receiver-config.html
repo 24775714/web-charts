@@ -32,7 +32,8 @@
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">Application Name:</label>
     <div>
-     <input id="ApplicationName" name="ApplicationName" type="text" maxlength="200" size="60"/>
+     <input id="LiveApplicationName" name="LiveApplicationName"
+            type="text" maxlength="200" size="60"/>
     </div>
    </div>
   </div>
@@ -45,7 +46,7 @@
    name  : 'LiveReceiverConfigurationForm',
    url   : 'server/post',
    fields: [
-    { field: 'ApplicationName', type: 'Application Name:' }
+    { field: 'LiveApplicationName', type: 'text' }
    ]
   });
  });
@@ -58,9 +59,18 @@
   return 'live';
  }
  
+ function validateSettings() {
+  var appName = $('#LiveApplicationName').val();
+  if(appName.trim().length == 0) {
+   $('#LiveApplicationName').w2tag('application name must not be empty');
+   return false;
+  }
+  return true;
+ }
+ 
  function getConfigurationJSON() {
   return {
-   applicationName: $('#ApplicationName').val()
+   applicationName: $('#LiveApplicationName').val().trim()
   };
  }
 </script>
