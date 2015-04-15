@@ -96,7 +96,7 @@
    var
     href = window.location.href;
    window.servlet = href.substr(0, href.lastIndexOf('/')) + '/admin';
-   //delete href;
+   delete href;
   }
  </script>
  
@@ -135,7 +135,7 @@
   var isValidConfiguration = validateSettings();
   if(!isValidConfiguration)
    return;
-  alert(JSON.stringify(getConfigurationJSON()));
+  submitServletConfiguration(getConfigurationParameterMap());
  }
  </script>
  
@@ -198,6 +198,28 @@
    function() { lockWithErrorMessage("servlet failed to respond properly"); }
   );
  }
+ 
+ /**
+   * POST a parameter map containing configuration details to the servlet.
+   */
+ function submitServletConfiguration(parameterMap) {
+  POST(
+   { set_configuration: JSON.stringify({ 
+    mode: getOperationMode(), 
+    configuration: JSON.stringify(parameterMap) 
+   })},
+   function(response) {
+    if(response.hasOwnProperty('configuration_result') && response.configuration_result == true)
+     tempLockWithMessage('server is running');
+    else
+     w2popup.open({
+      title: 'Configuration Failed',
+      body: '<div class="w2ui-centered">Invalid configuration</div>'
+     });
+   },
+   function() { lockWithErrorMessage("servlet did not accept configuration"); }
+  );
+ }
  </script>
  
  <!-- Initial loadup -->
@@ -218,7 +240,7 @@
                  get a string describing the current content of $('#DisplayPane').
    validateSettings():
                  returns true if and only if the user has selected valid settings.
-   getConfigurationJSON():
+   getConfigurationParameterMap():
                  get a JSON string describing the configuration settings specified by the user.
  -->
  <script type="text/javascript">
@@ -228,7 +250,7 @@
    return 'none';
   }
   
-  function getConfigurationJSON() {
+  function getConfigurationParameterMap() {
    return {};
   }
  </script>
