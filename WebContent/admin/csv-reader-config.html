@@ -30,13 +30,14 @@
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">Application Name:</label>
     <div>
-     <input name="ApplicationName" type="text" maxlength="200" size="60"/>
+     <input id="CSVApplicationName" name="CSVApplicationName"
+            type="text" maxlength="200" size="60"/>
     </div>
    </div>
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">CSV File Source:</label>
     <div>
-     <input name="CSVFileSource" type="text" maxlength="200" size="60"/>
+     <input id="CSVFileSource "name="CSVFileSource" type="text" maxlength="200" size="60"/>
     </div>
    </div>
   </div>
@@ -49,8 +50,9 @@
    name  : 'CSVFileReaderConfigurationForm',
    url   : 'server/post',
    fields: [
-    { field: 'ApplicationName', type: 'text' },
-    { field: 'CSVFileSource', type: 'file', options: { max: 1, silent: false } }
+    { field: 'CSVApplicationName', type: 'text' },
+    { field: 'CSVFileSource', type: 'file',
+     options: { max: 1, silent: false }, required: true }
    ]
   });
  });
@@ -63,9 +65,21 @@
   return 'csv';
  }
  
+ function validateSettings() {
+  var appName = $('#CSVApplicationName').val();
+  validationErrors = w2ui['CSVFileReaderConfigurationForm'].validate(true);
+  if(appName.trim().length == 0) {
+   $('#CSVApplicationName').w2tag('Application name must not be empty');
+   return false;
+  }
+  if(validationErrors.length != 0)
+   return false;
+  return true;
+ }
+ 
  function getConfigurationJSON() {
   return {
-   applicationName: $('#ApplicationName').val(),
+   applicationName: $('#CSVApplicationName').val(),
    fileName: $('#CSVFileSource').data('selected')
   }
  }
