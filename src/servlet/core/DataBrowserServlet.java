@@ -55,7 +55,7 @@ public final class DataBrowserServlet extends HttpServlet {
    private final static Logger
       logger = LoggerFactory.getLogger(DataBrowserServlet.class);
    
-   private final DataSourceConnector
+   private DataSourceConnector
       dataSourceConnector;
    
    private final Gson
@@ -72,7 +72,7 @@ public final class DataBrowserServlet extends HttpServlet {
    public DataBrowserServlet() {
       super();
       logger.info("loading data browser servlet..");
-      this.dataSourceConnector = new DiscreteOrnsteinUhlenbeckDataSource(5, 1000L);
+      this.dataSourceConnector = null;
       this.gson = new GsonBuilder().create();
       logger.info("data browser servlet loaded successfully.");
    }
@@ -205,6 +205,11 @@ public final class DataBrowserServlet extends HttpServlet {
       ) throws ServletException, IOException {
       response.setContentType("application/json");
       response.setCharacterEncoding("UTF-8");
+      
+      // Lazy initialisation of data connector:
+      if(this.dataSourceConnector == null && this.isInitialized.get())
+         this.dataSourceConnector =
+            (DataSourceConnector) super.getServletContext().getAttribute("data-source-connector");
       
       final Map<String, String[]>
          parameters = request.getParameterMap();
