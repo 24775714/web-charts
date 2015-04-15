@@ -214,7 +214,9 @@
     else
      w2popup.open({
       title: 'Configuration Failed',
-      body: '<div class="w2ui-centered">Invalid configuration</div>'
+      body:
+       '<div class="w2ui-centered"><p>The server responded as follows:</p><br />'
+     + '<p>' + response.configuration_error + '</p></div>'
      });
    },
    function() { lockWithErrorMessage("servlet did not accept configuration"); }

@@ -144,7 +144,11 @@ public final class AdminServlet extends HttpServlet {
      *         set_configuration</code>, the response is a string keyed by
      *         <code>configuration_result</code> whose value is a boolean specifying
      *         whether or not the configuration request was successful. The configuration
-     *         request will fail if configuration has already occurred.
+     *         request will fail if configuration has already occurred. If the servlet
+     *         responds to the request with <code>configuration_result: false</code>,
+     *         then the response will also contain a key <code>configuration_error</code>
+     *         whose value is a verbose string indicating the nature of the configuration
+     *         failure. This string may or may not be empty.
      * 
      *    <li> For requests containing a single key-value pair whose key is <code>
      *         get_operation_type</code> with no value, the response of this
@@ -214,6 +218,7 @@ public final class AdminServlet extends HttpServlet {
                "failed to create and execute configuration instruction from "
              + "set_configuration request: " + ExceptionUtils.getRootCauseMessage(e) + ".");
             responseMap.put("configuration_result", false);
+            responseMap.put("configuration_error", e.getMessage());
          }
          break;
       default:
