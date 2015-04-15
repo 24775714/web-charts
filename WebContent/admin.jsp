@@ -132,6 +132,9 @@
    * Respond to a #StartServerButton click event:
    */
  function handleStartServerButtonClick() {
+  var isValidConfiguration = validateSettings();
+  if(!isValidConfiguration)
+   return;
   alert(JSON.stringify(getConfigurationJSON()));
  }
  </script>
@@ -213,6 +216,8 @@
                  method, the HTML and DOM content of $('#DisplayPane') will be emptied.
    getOperationmode():
                  get a string describing the current content of $('#DisplayPane').
+   validateSettings():
+                 returns true if and only if the user has selected valid settings.
    getConfigurationJSON():
                  get a JSON string describing the configuration settings specified by the user.
  -->
