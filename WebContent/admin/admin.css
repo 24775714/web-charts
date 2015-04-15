@@ -66,5 +66,7 @@
  line-height: 20px;
  -webkit-font-smoothing: antialiased;
 }
- 
+
+.w2ui-field.w2ui-required > div::before {
+ content: '';
 }
