@@ -87,8 +87,8 @@ public final class LiveDataReceiver extends HttpServlet {
       super.init();
       this.isInitialized =
          (AtomicBoolean) super.getServletContext().getAttribute("live-data-receiver-initialized");
-      // TODO
-      this.isInitialized.set(true);
+      this.isInitialized.set(false);
+      super.getServletContext().setAttribute("live-receiver-data-buffer", this.dataBuffer);
    }
    
    /**
