@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -57,7 +56,7 @@ public final class AdminServlet extends HttpServlet {
    private final Gson
       gson;
    
-   private final boolean
+   private boolean
       isConfigured;
       
    
@@ -76,10 +75,6 @@ public final class AdminServlet extends HttpServlet {
    @Override
    public void init() throws ServletException {
       super.init();
-      final AtomicBoolean
-         dataBrowserServletLock =
-            (AtomicBoolean) super.getServletContext().getAttribute("data-browser-initialized");
-      dataBrowserServletLock.set(true);
    }
    
    
@@ -200,10 +195,8 @@ public final class AdminServlet extends HttpServlet {
       
       switch(name) {
       case "is_configured":
-         final String
-            result = Boolean.toString(this.isConfigured);
-         logger.info("ask: is_configured, response: " + result);
-         responseMap.put("configuration_state", result);
+         logger.info("ask: is_configured, response: " + this.isConfigured);
+         responseMap.put("configuration_state", this.isConfigured);
          break;
       case "set_configuration":
          final ConfigurationRequest
@@ -213,6 +206,7 @@ public final class AdminServlet extends HttpServlet {
                instruction = configurationRequest.createConfiguration();
             instruction.configure(super.getServletContext());
             responseMap.put("configuration_result", true);
+            this.isConfigured = true;
          }
          catch(final IllegalArgumentException | AdminConfigurationInstructionException e) {
             logger.error(

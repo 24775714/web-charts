@@ -105,7 +105,7 @@ public final class DataBrowserServlet extends HttpServlet {
      *        The map to which responses are to be inserted. This argument must be
      *        non-<code>null</code>.
      */
-   private void listKnownCharts(final Map<String, String> responseMap) {
+   private void listKnownCharts(final Map<String, Object> responseMap) {
       try {
          responseMap.put("known_charts", this.gson.toJson(
             this.dataSourceConnector.getKnownCharts()));
@@ -121,7 +121,7 @@ public final class DataBrowserServlet extends HttpServlet {
      *        The map to which responses are to be inserted. This argument must be
      *        non-<code>null</code>.
      */
-   private void processGetDataNameRequest(final Map<String, String> responseMap) {
+   private void processGetDataNameRequest(final Map<String, Object> responseMap) {
       responseMap.put("data_name", this.dataSourceConnector.getDataSourceName());
    }
    
@@ -143,7 +143,7 @@ public final class DataBrowserServlet extends HttpServlet {
      */
    private void processDownloadDataRequest(
       final String requestString,
-      final Map<String, String> results
+      final Map<String, Object> results
       ) {
       final DownloadDataRequest
          request = this.gson.fromJson(requestString, DownloadDataRequest.class);
@@ -213,17 +213,18 @@ public final class DataBrowserServlet extends HttpServlet {
       
       final Map<String, String[]>
          parameters = request.getParameterMap();
-      final Map<String, String>
-         responseMap = new HashMap<String, String>();
+      final Map<String, Object>
+         responseMap = new HashMap<String, Object>();
       
       if(parameters.size() == 1) {
          final Entry<String, String[]>
             record = parameters.entrySet().iterator().next();
          final String
             name = record.getKey();
-         if(name.equals("is_ready") && record.getValue().length == 0) {
-            responseMap.put("is_ready", Boolean.toString(this.isInitialized.get()));
+         if(name.equals("is_ready")) {
+            responseMap.put("is_ready", this.isInitialized.get());
             response.getWriter().write(this.gson.toJson(responseMap));
+            return;
          }
       }
       
