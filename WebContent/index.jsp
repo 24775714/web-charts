@@ -947,10 +947,21 @@
     */
    google.load("visualization", "1", {packages:["corechart"]});
    $(document).tooltip();
-   setDataStreamNames(getDataStreamNameFromServer());
    
    function onLoadCallback() {
-    w2utils.unlock($('#Site'));
+    setTimeout(waitForServletToBecomeReady, 1000);
+   }
+   
+   function waitForServletToBecomeReady() {
+    queryIsServletReady(
+      function() {
+       w2utils.unlock($('#Site'));
+       setDataStreamNames(getDataStreamNameFromServer());
+      },
+      function() {
+       setTimeout(waitForServletToBecomeReady, 1000);
+      }
+     )
    }
   </script>
  </body>
