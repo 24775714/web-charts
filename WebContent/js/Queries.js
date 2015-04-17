@@ -67,6 +67,26 @@ function getDataStreamNameFromServer() {
 }
 
 /**
+  * Send an is_ready query to the servlet.
+  */
+function queryIsServletReady(onSuccess, onFailure) {
+ $.ajax({
+  type: 'POST',
+  url: servlet,
+  data: { 'is_ready' : '' },
+  traditional: true,
+  async: true,
+  success: function(response){
+   response.is_ready ? onSuccess() : onFailure();
+  },
+  error: function(x,e){
+   console.log("server did not respond to query: is_ready");
+   onFailure();
+  } 
+ });
+}
+
+/**
   * Retrieve all subscribed chart data from the servlet.
   */
 function getChartDataFromServerForAllSubscribedCharts() {
