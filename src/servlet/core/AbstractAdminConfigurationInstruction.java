@@ -59,7 +59,7 @@ abstract class AbstractAdminConfigurationInstruction implements AdminConfigurati
    }
    
    /**
-     * When overriding this method, call super.configure as a first instruction
+     * When overriding this method, call super.configure as a last instruction
      */
    @Override
    public void configure(final ServletContext context)

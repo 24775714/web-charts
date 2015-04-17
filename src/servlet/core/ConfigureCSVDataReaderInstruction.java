@@ -73,13 +73,12 @@ final class ConfigureCSVDataReaderInstruction extends AbstractAdminConfiguration
    @Override
    public void configure(final ServletContext context)
       throws AdminConfigurationInstructionException {
-      super.configure(context);
       try {
          final DataSourceConnector
             dataSourceConnector = new TitledCSVDataSource(
                this.fileName, this.nameOfTimeColumn);
          context.setAttribute("data-source-connector", dataSourceConnector);
-         logger.info("connected live data receiver buffer to charting servlet.");
+         logger.info("connected browser servlet to CSV data source.");
       }
       catch(final Exception e) {
          final String
@@ -89,5 +88,6 @@ final class ConfigureCSVDataReaderInstruction extends AbstractAdminConfiguration
          throw new AdminConfigurationInstructionException(
             StringUtils.capitalize(errMsg));
       }
+      super.configure(context);
    }
 }
