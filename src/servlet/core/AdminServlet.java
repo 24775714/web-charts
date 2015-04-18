@@ -113,7 +113,8 @@ public final class AdminServlet extends HttpServlet {
             return (new Gson()).fromJson(
                this.configuration, ConfigureCSVDataReaderInstruction.class);
          case "random":
-            return null;
+            return (new Gson()).fromJson(
+               this.configuration, ConfigureRandomDataGeneratorInstruction.class);
          default:
             {
             final String
