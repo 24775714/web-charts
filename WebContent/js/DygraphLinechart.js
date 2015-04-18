@@ -187,7 +187,7 @@ DygraphLinechart.prototype.redraw = function() {
  $('#' + this.containerID + 'DygraphButtons')
  .append('<div class="BigFont"' + 
  ' style="padding-top: 5px; margin-right: 2px; float:right">Alpha:</div>');
- 
+ /*
  $('#' + this.containerID + 'DygraphButtons')
  .append($('<button title="highlight focused graphs" id="HighlightDygraphButton"' +
  ' style="float:right; margin-right: 7px"/>')
@@ -201,7 +201,7 @@ DygraphLinechart.prototype.redraw = function() {
    'highlightSeriesOpts' : ref.options['highlightSeriesOpts'],
    'highlightSeriesBackgroundAlpha' : ref.options['highlightSeriesBackgroundAlpha']});
  }).button());
- 
+ */
  $('#' + this.containerID + 'DygraphButtons').append(
   $('<div/>', {
    id: this.containerID + 'legendOptions',
