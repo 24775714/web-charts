@@ -26,7 +26,7 @@
  + 'number of data points in each series below.'
   );
  </script>
- <div id="Form" style="width: 100%; margin-top: 15px; height: 200px">
+ <div id="Form" style="width: 100%; margin-top: 15px; height: 350px">
   <div class="w2ui-page page-0">
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
     <label class="VerticalCentering">Application Name:</label>
@@ -49,9 +49,22 @@
     </div>
    </div>
    <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
-    <label class="VerticalCentering">Number of Points:</label>
+    <label class="VerticalCentering">Number of Points per Chart:</label>
     <div>
      <input id="NumberOfDataPoints" name="NumberOfDataPoints"
+            type="text" maxlength="200" size="30"/>
+    </div>
+   </div>
+   <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
+    <label class="VerticalCentering">Update Rate (ms):</label>
+    <div>
+     <input id="UpdateRate" name="UpdateRate" type="text" maxlength="200" size="30"/>
+    </div>
+   </div>
+   <div class="w2ui-field w2ui-span8" style="clear: both; width: 100%">
+    <label class="VerticalCentering">Maximum Datapoints per Cycle:</label>
+    <div>
+     <input id="MaximumNewDatapointsPerCycle" name="MaximumNewDatapointsPerCycle"
             type="text" maxlength="200" size="30"/>
     </div>
    </div>
@@ -69,8 +82,14 @@
     { field: 'RandomDataType', type: 'list', required: true,
      options: { items: ['Ornstein-Uhlenbeck', 'Linear'] }
     },
-    { field: 'NumberOfTimeseries', type: 'int', options: { min: 1 }, required: true },
-    { field: 'NumberOfDataPoints', type: 'int', options: { min: 1 }, required: true }
+    { field: 'NumberOfTimeseries', type: 'int', options: { min: 1 }, required: true,
+     options: { groupSymbol: '' } },
+    { field: 'NumberOfDataPoints', type: 'int', options: { min: 1 }, required: true,
+     options: { groupSymbol: '' } },
+    { field: 'UpdateRate', type: 'int', required: true,
+     options: { min: 1, groupSymbol: '' } },
+    { field: 'MaximumNewDatapointsPerCycle', type: 'int', required: true,
+     options: { min: 0, groupSymbol: '' } }
    ]
   });
  });
@@ -99,8 +118,10 @@
   return {
    applicationName: $('#RandomDataApplicationName').val().trim(),
    dataType: $('#RandomDataType').val(),
-   numberOfTimeseries: $('#NumberOfTimeseries').val(),
-   NumberOfDataPoints: $('#NumberOfDataPoints').val()
+   numberOfChartsToGenerate: $('#NumberOfTimeseries').val(),
+   maximumNumberOfDataPointsPerChart: $('#NumberOfDataPoints').val(),
+   maximumNumberOfNewDataPointsPerCycle: $('#MaximumNewDatapointsPerCycle').val(),
+   updateIntervalMilliseconds: $('#UpdateRate').val()
   };
  }
 </script>
