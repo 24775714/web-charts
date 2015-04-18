@@ -4,7 +4,9 @@ Interactive web charts. web-charts is web application that provides interactive 
 scientific graphs in a web browser. The server may be generating the underlying data continuously,
 or reading the data from eg. a database/CSV file source.
 
-![web-charts in a Safari browser](docs/webchartsPic.png)
+![web-charts in a Chromium browser](docs/web-charts-browser.png)
+
+![web-charts in a Chromium browser](docs/web-charts-admin.png)
 
 # Work in Progress
 
